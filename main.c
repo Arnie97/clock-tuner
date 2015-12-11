@@ -3,22 +3,19 @@
 #include <string.h>
 
 void *
-get_bitmap_font(void *buf, const unsigned char *bytes, size_t offset, size_t size)
+get_bitmap_font(void *buf, unsigned char *bytes[], size_t offset, size_t size)
 {
-    // 先求区位码
-    size_t code_point =
-        (bytes[0] - 0xA1)    // 区码
-        * 94                 // 每区的字符数
-        + (bytes[1] - 0xA1)  // 位码
-    ;
-
-    // 然后再计算其在区位码二维表中的位置，进而得出此字符在文件中的偏移
-    if (bytes[0] >= 0xA1) {
-        offset += code_point * size;
+    if (0[*bytes] >= 0xA1) {
+        size_t code_point =           // 先求区位码，然后再计算其在区位码二维表中的位置
+            (0[*bytes] - 0xA1)        // 区码
+            * 94                      // 每区的字符数
+            + (1[*bytes] - 0xA1);     // 位码
+        offset += code_point * size;  // 得出此字符在文件中的偏移
+        *bytes += 2;                  // 全角字符
     } else {
-        offset += (bytes[0] + 156 - 1) * size;
+        offset += (*bytes[0] + 156 - 1) * size;
+        *bytes += 1;                  // 半角字符
     }
-
     FILE *fp = fopen("res/font/HZK16", "rb");
     fseek(fp, offset, SEEK_SET);
     fread(buf, 1, size, fp);
@@ -30,19 +27,13 @@ get_bitmap_font(void *buf, const unsigned char *bytes, size_t offset, size_t siz
 int
 main(int argc, const char *argv[])
 {
-    unsigned char *str = "\xc4\xfe\xbe\xb2\xd6\xc2\xd4\xb6";
-    size_t len = strlen(str);
-    for (size_t i = 0; i < len; ++i) {
-        printf("0x%x ", str[i]);
-    }
-    putchar('\n');
-
+    unsigned char *str = "#!\xc4\xfe\xbe\xb2\xd6\xc2\xd4\xb6";
     size_t rows = 16, cols = 16;
     size_t offset_size = rows * cols / 8;
     uint8_t font_data[offset_size];
 
-    for (size_t i = 0; i < len; i += 2) {
-        get_bitmap_font(font_data, str + i, 0, offset_size);
+    for (unsigned char *beg = str, *end = str + strlen(str); beg != end;) {
+        get_bitmap_font(font_data, &beg, 0, offset_size);
         putchar('\n');
 
         uint8_t *ptr = font_data, pos = 7;
