@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <string.h>
 
-uint16_t *
-get_bitmap_font(uint16_t *buf, const unsigned char *bytes, size_t offset)
+void *
+get_bitmap_font(void *buf, const unsigned char *bytes, size_t offset)
 {
     size_t offset_size = 16 * 16 / 8;
 
@@ -23,7 +23,7 @@ get_bitmap_font(uint16_t *buf, const unsigned char *bytes, size_t offset)
 
     FILE *fp = fopen("res/font/HZK16", "rb");
     fseek(fp, offset, SEEK_SET);
-    fread(buf, sizeof(*buf), offset_size / sizeof(*buf), fp);
+    fread(buf, 1, offset_size, fp);
     fclose(fp);
     fp = NULL;
     return buf;
