@@ -17,7 +17,7 @@ get_bitmap_font(void *buf, const unsigned char *bytes[], size_t offset, size_t s
         offset += (*bytes[0] + 156 - 1) * size;
         *bytes += 1;                  // 半角字符
     }
-    FILE *fp = fopen("res/font/HZK16", "rb");
+    FILE *fp = fopen("res/font/HZK12", "rb");
     fseek(fp, offset, SEEK_SET);
     fread(buf, 1, size, fp);
     fclose(fp);
@@ -29,8 +29,9 @@ uint8_t *
 bitmap_blit(uint32_t width, uint32_t height, const unsigned char *str)
 {
     const size_t
-    rows          = 16,
+    rows          = 12,
     cols          = 16,
+    cols_         = 12,
     offset_size   = rows * cols / 8;
 
     const uint16_t
@@ -68,8 +69,8 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *str)
             x -= cols;
             putchar('\n');
         }
-        if (x < 132) {
-            x += cols;
+        if (x < width - cols_) {
+            x += cols_;
             y += rows;
         } else {
             x = 0;
