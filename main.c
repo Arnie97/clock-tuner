@@ -50,14 +50,15 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *beg, const uns
     }
 
     uint8_t font_data[offset_size];
-    size_t x = 0, y = height;
+    size_t x = 0, y = height - 1;
     while (beg != end) {
         get_bitmap_font(font_data, &beg, 0, offset_size);
-        putchar('\n');
         uint8_t *ptr = font_data, pos = 7;
         for (size_t row = 0; row < rows; row++, y--) {
             for (size_t col = 0; col < cols; col++, x++) {
+#ifdef _DEBUG
                 printf("buf[%u,%u] = font[%u,%u] = %u\n", y, x, row, col, (*ptr >> pos) & 1);
+#endif
                 buf[y * bytes_per_row + (x >> 3)] |= ((*ptr >> pos) & 1) << (7 - x & 7);
                 if (pos) {
                     pos--;
@@ -67,14 +68,13 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *beg, const uns
                 }
             }
             x -= cols;
-            putchar('\n');
         }
         if (x < width - cols_) {
             x += cols_;
             y += rows;
         } else {
             x = 0;
-            y++;
+            y--;
         }
     }
     return buf;
