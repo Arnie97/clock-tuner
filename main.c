@@ -50,7 +50,7 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *beg, const uns
     }
 
     uint8_t font_data[offset_size];
-    size_t x = 0, y = height - 1;
+    int32_t x = 0, y = height - 1;
     while (beg != end) {
         get_bitmap_font(font_data, &beg, 0, offset_size);
         uint8_t *ptr = font_data, pos = 7;
@@ -72,6 +72,9 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *beg, const uns
         if (x < width - cols_) {
             x += cols_;
             y += rows;
+        } else if (y < 0) {
+            puts("Current page is full!");
+            break;
         } else {
             x = 0;
             y--;
