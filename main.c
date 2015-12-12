@@ -116,8 +116,15 @@ main(int argc, const char *argv[])
     height        = 64;
 
     const unsigned char
-    text_file[]   = "gb2312.txt",
-    output_file[] = "__ADK__.BMP";
+    *text_file    = "gb2312.txt",
+    *output_file  = "__ADK__.BMP";
+
+    if (argc > 1) {
+        text_file = argv[1];
+        if (argc > 2) {
+            output_file = argv[2];
+        }
+    }
 
     char *text;
     size_t len = read_file(&text, text_file);
