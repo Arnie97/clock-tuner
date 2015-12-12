@@ -26,7 +26,7 @@ get_bitmap_font(void *buf, const unsigned char *bytes[], size_t offset, size_t s
 }
 
 uint8_t *
-bitmap_blit(uint32_t width, uint32_t height, const unsigned char *str)
+bitmap_blit(uint32_t width, uint32_t height, const unsigned char *beg, const unsigned char *end)
 {
     const size_t
     rows          = 12,
@@ -51,7 +51,7 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *str)
 
     uint8_t font_data[offset_size];
     size_t x = 0, y = height;
-    for (const unsigned char *beg = str, *end = str + strlen(str); beg != end;) {
+    while (beg != end) {
         get_bitmap_font(font_data, &beg, 0, offset_size);
         putchar('\n');
         uint8_t *ptr = font_data, pos = 7;
@@ -80,22 +80,50 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *str)
     return buf;
 }
 
+size_t
+read_file(char **ptr, const char file_name[])
+{
+    FILE *fp = fopen(file_name, "r");
+    if (!fp) {
+        printf("Failed to open file %s\n", file_name);
+        return 0;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    size_t size = ftell(fp);
+
+    char *buf = malloc(size);
+    if (!buf) {
+        printf("Memory allocation FAILED!\n");
+        fclose(fp);
+        return 0;
+    } else {
+        *ptr = buf;
+    }
+
+    rewind(fp);
+    fread(buf, size, 1, fp);
+    fclose(fp);
+
+    return size;
+}
+
 int
 main(int argc, const char *argv[])
 {
-    // parse_args();
-    // read_file();
-
     const uint32_t
     width         = 131,
     height        = 64;
 
     const unsigned char
-    text[]        = "#!\xc4\xfe\xbe\xb2\xd6\xc2\xd4\xb6",
+    text_file[]   = "gb2312.txt",
     output_file[] = "__ADK__.BMP";
 
-    uint8_t *buf = bitmap_blit(width, height, text);
+    char *text;
+    size_t len = read_file(&text, text_file);
+    uint8_t *buf = bitmap_blit(width, height, text, text + len);
     write_1_bit_bmp(output_file, width, height, buf);
+    free(text);
     free(buf);
 
     return 0;
