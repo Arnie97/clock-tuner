@@ -3,7 +3,7 @@
 #include <string.h>
 
 void *
-get_bitmap_font(void *buf, unsigned char *bytes[], size_t offset, size_t size)
+get_bitmap_font(void *buf, const unsigned char *bytes[], size_t offset, size_t size)
 {
     if (0[*bytes] >= 0xA1) {
         size_t code_point =           // 先求区位码，然后再计算其在区位码二维表中的位置
@@ -24,21 +24,21 @@ get_bitmap_font(void *buf, unsigned char *bytes[], size_t offset, size_t size)
     return buf;
 }
 
-int
-main(int argc, const char *argv[])
+void
+bitmap_blit(const unsigned char *str)
 {
-    unsigned char *str = "#!\xc4\xfe\xbe\xb2\xd6\xc2\xd4\xb6";
-    size_t rows = 16, cols = 16;
-    size_t offset_size = rows * cols / 8;
-    uint8_t font_data[offset_size];
+    const size_t
+    rows          = 16,
+    cols          = 16,
+    offset_size   = rows * cols / 8;
 
-    for (unsigned char *beg = str, *end = str + strlen(str); beg != end;) {
+    uint8_t font_data[offset_size];
+    for (const unsigned char *beg = str, *end = str + strlen(str); beg != end;) {
         get_bitmap_font(font_data, &beg, 0, offset_size);
         putchar('\n');
-
         uint8_t *ptr = font_data, pos = 7;
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++) {
+        for (size_t row = 0; row < rows; row++) {
+            for (size_t col = 0; col < cols; col++) {
                 fputs(((*ptr >> pos) & 1)? "@@": "  ", stdout);
                 if (pos) {
                     pos--;
@@ -50,5 +50,21 @@ main(int argc, const char *argv[])
             putchar('\n');
         }
     }
+}
+
+int
+main(int argc, const char *argv[])
+{
+    // parse_args();
+    // read_file();
+
+    const unsigned char
+    text[]        = "#!\xc4\xfe\xbe\xb2\xd6\xc2\xd4\xb6",
+    output_file[] = "__ADK__.BMP";
+
+    bitmap_blit(text);
+    // write_1_bit_bmp(output_file, width, height, buf);
+    // free(buf);
+
     return 0;
 }

@@ -6,9 +6,12 @@
 uint8_t *
 generate_random_image(uint32_t width, uint32_t height)
 {
-    uint16_t bpp = 1;
-    uint32_t bytes_per_row = (width * bpp + 31) / 32 * 4;
-    uint32_t data_size = bytes_per_row * height;
+    const uint16_t
+    bpp           = 1;
+
+    const uint32_t
+    bytes_per_row = (width * bpp + 31) / 32 * 4,
+    data_size     = bytes_per_row * height;
 
     uint8_t *buf = malloc(data_size);
     if (!buf) {
@@ -34,11 +37,11 @@ generate_random_image(uint32_t width, uint32_t height)
 int
 write_1_bit_bmp(const char *file, uint32_t width, uint32_t height, uint8_t *data)
 {
-    uint16_t
+    const uint16_t
     bpp               = 1,  // bit of colors per pixel; 1 for monochrome
     planes            = 1;  // the number of color planes; must be 1
 
-    uint32_t
+    const uint32_t
     file_header_size  = 14,
     info_header_size  = 40,
     palette_size      = (1 << bpp) * 4,
@@ -111,12 +114,16 @@ write_1_bit_bmp(const char *file, uint32_t width, uint32_t height, uint8_t *data
 int
 main(int argc, char *argv[])
 {
-    const unsigned w = 131, h = 64;
-    const char *output_file = "__ADK__.BMP";
+    const uint32_t
+    width         = 131,
+    height        = 64;
+
+    const unsigned char
+    output_file[] = "__ADK__.BMP";
 
     puts("Generating a random monochrome bitmap file...");
-    uint8_t *bytes = generate_random_image(w, h);
-    int ret = write_1_bit_bmp(output_file, w, h, bytes);
+    uint8_t *bytes = generate_random_image(width, height);
+    int ret = write_1_bit_bmp(output_file, width, height, bytes);
     printf("Written to file %s.\n", output_file);
 
     free(bytes);
