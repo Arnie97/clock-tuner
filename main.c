@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern int write_1_bit_bmp(
+    const char *file,
+    uint32_t width, uint32_t height,
+    uint8_t *data
+);
+
 void *
 get_bitmap_font(void *buf, const unsigned char *bytes[], size_t offset, size_t size)
 {
@@ -25,9 +31,16 @@ get_bitmap_font(void *buf, const unsigned char *bytes[], size_t offset, size_t s
     return buf;
 }
 
-uint8_t *
-bitmap_blit(uint32_t width, uint32_t height, const unsigned char *beg, const unsigned char *end)
+unsigned
+bitmap_blit(
+    const char *file,
+    uint32_t width, uint32_t height,
+    const unsigned char *beg, const unsigned char *end
+)
 {
+    unsigned
+    page          = 1;
+
     const size_t
     rows          = 12,
     cols          = 16,
@@ -46,7 +59,7 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *beg, const uns
         printf("Memory allocation FAILED!\n");
         return NULL;
     } else {
-        memset(buf, 0, data_size);
+        initialize: memset(buf, 0, data_size);
     }
 
     uint8_t font_data[offset_size];
@@ -73,14 +86,19 @@ bitmap_blit(uint32_t width, uint32_t height, const unsigned char *beg, const uns
             x += cols_;
             y += rows;
         } else if (y < 0) {
-            puts("Current page is full!");
-            break;
+            write_1_bit_bmp(file, width, height, buf);
+            printf("Page %u is full!\nPress ENTER to proceed with the next page...", page++);
+            getchar();
+            goto initialize;
         } else {
             x = 0;
             y--;
         }
     }
-    return buf;
+    write_1_bit_bmp(file, width, height, buf);
+    free(buf);
+    printf("Well done. %u pages proceeded.\n", page);
+    return page;
 }
 
 size_t
@@ -131,10 +149,8 @@ main(int argc, const char *argv[])
 
     char *text;
     size_t len = read_file(&text, text_file);
-    uint8_t *buf = bitmap_blit(width, height, text, text + len);
-    write_1_bit_bmp(output_file, width, height, buf);
+    bitmap_blit(output_file, width, height, text, text + len);
     free(text);
-    free(buf);
 
     return 0;
 }
