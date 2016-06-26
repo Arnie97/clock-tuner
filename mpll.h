@@ -1,6 +1,8 @@
 #ifndef _MPLL_H
 #define _MPLL_H
 
+extern const unsigned valid_mpllcon_values[];
+
 struct mpllcon {
 	unsigned sdiv:  2;
 	unsigned     :  2;

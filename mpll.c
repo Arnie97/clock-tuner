@@ -20,6 +20,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mpll.h"
 
+const unsigned valid_mpllcon_values[] = {
+    // hp default
+    0x43012,
+
+    // from PLL value selection table in S3C2410 datasheet
+    0x52023, 0x52013, 0xa1033, 0x78023, 0x8e023, 0x52022,
+    0x47012, 0x69022, 0x70022, 0x7f022, 0x69012, 0x96022,
+    0x74012, 0x52021, 0x5a021, 0x44011, 0x47011, 0x4d011,
+    0x52011, 0x55011, 0x58011, 0xa1030, 0
+};
+
 
 inline float
 mpllcon_to_freq(struct mpllcon *reg)
