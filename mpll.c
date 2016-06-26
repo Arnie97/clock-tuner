@@ -45,3 +45,24 @@ mpllcon_to_freq(struct mpllcon *reg)
 
 	return (float)fin * m / (p << s);
 }
+
+int
+is_valid_mpllcon(unsigned *reg)
+{
+	unsigned *p = valid_mpllcon_values;
+
+	// if mpll is set to hp default, return 1
+	if (*p == *reg) {
+		return 1;
+	}
+
+	// otherwise, iterate over mpllcon values
+	// and return 2 on the first match
+	while (*++p) {
+		if (*reg == *p) {
+			return 2;
+		}
+	}
+
+	return 0;
+}

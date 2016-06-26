@@ -79,16 +79,19 @@ _start(void)
 			hpg_set_indicator(i, 0x00);
 		}
 
+		const char *msg[] = {
+			"UNKNOWN", "DEFAULT", "CHANGED", "PROFILE"
+		};
 		float mpll = mpllcon_to_freq(&clk);
+		int status = is_valid_mpllcon(&clk);
 		printf(
-			"    %08x    %08x\n"
-			"CLK %08x (%.2f MHz)\n"
+			"CLK %08x at %08x\n"
+			"    (%.2f MHz, %s %s)\n"
 			"LCD %08x at %08x\n"
 			"RTC %08x at %08x\n"
 			"\n",
-			0x01234567,
-			0x89abcdef,
-			clk, mpll,
+			clk, (unsigned)clk_registers,
+			mpll, msg[status], msg[4],
 			lcd, (unsigned)lcd_registers,
 			rtc, (unsigned)rtc_registers
 		);

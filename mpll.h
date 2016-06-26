@@ -13,5 +13,6 @@ struct mpllcon {
 };
 
 float mpllcon_to_freq(struct mpllcon *reg);
+int is_valid_mpllcon(unsigned *reg);
 
 #endif
