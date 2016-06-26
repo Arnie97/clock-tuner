@@ -45,7 +45,7 @@ void _start()
 	__scr_h = (sys_lcdgetheight() == 64)? 10: 13;
 
 	// declare locally to reduce executable size
-	unsigned state_buffer[4], lcd_buffer[17], clk_buffer[6];
+	unsigned state_buffer[4], lcd_buffer[17];
 	__exit_stk_state = state_buffer;
 
 	volatile unsigned
@@ -63,10 +63,6 @@ void _start()
 
 	// save current hardware state
 	sys_lcdsave(lcd_buffer);
-	sys_clksave(clk_buffer);
-
-	// slow mode on by default - makes sense in the majority of applications
-	sys_slowOn();
 
 	// will return 0 when exitting
 	if (_exit_save((unsigned *)state_buffer)) {
@@ -102,7 +98,6 @@ void _start()
 
 	// restore original hardware values
 	sys_lcdrestore(lcd_buffer);
-	sys_clkrestore(clk_buffer);
 
 	// turn interrupts on for the OS
 	sys_intOn();
