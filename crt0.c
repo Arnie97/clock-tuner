@@ -50,15 +50,11 @@ _start(void)
 	unsigned state_buffer[4], lcd_buffer[17];
 	__exit_stk_state = state_buffer;
 
+	// remapped registers' addresses
 	volatile unsigned
-		*const clk_registers = (unsigned *)0x07200004,
-		*const lcd_registers = (unsigned *)0x07300000,
-		*const rtc_registers = (unsigned *)0x07B00000;
-
-	const unsigned
-		clk = *clk_registers,
-		lcd = *lcd_registers,
-		rtc = *rtc_registers;
+		*const clk = (unsigned *)0x07200004,
+		*const lcd = (unsigned *)0x07300000,
+		*const rtc = (unsigned *)0x07B00000;
 
 	// turn interrupts off so we can use the screen
 	sys_intOff();
@@ -82,18 +78,18 @@ _start(void)
 		const char *msg[] = {
 			"UNKNOWN", "DEFAULT", "CHANGED", "PROFILE"
 		};
-		float mpll = mpllcon_to_freq(&clk);
-		int status = is_valid_mpllcon(&clk);
+		float mpll = mpllcon_to_freq(clk);
+		int status = is_valid_mpllcon(clk);
 		printf(
 			"CLK %08x at %08x\n"
 			"    (%.2f MHz, %s %s)\n"
 			"LCD %08x at %08x\n"
 			"RTC %08x at %08x\n"
 			"\n",
-			clk, (unsigned)clk_registers,
+			*clk, (unsigned)clk,
 			mpll, msg[status], msg[4],
-			lcd, (unsigned)lcd_registers,
-			rtc, (unsigned)rtc_registers
+			*lcd, (unsigned)lcd,
+			*rtc, (unsigned)rtc
 		);
 
 		delay(750000);
