@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <hpgcc49.h>
+#include <hpgraphics.h>
 
 #define delay(t) { volatile int i = (t); while (i--); }
 
@@ -73,6 +74,13 @@ void _start()
 		printf(
 			"SYSTEM INFORMATION\n\n"
 			"Build 20160626 by Arnie97\n\n"
+		);
+		for (int i = 0; i < 6; i++) {
+			delay(500000);
+			hpg_set_indicator((i + 1) % 6, 0xFF);
+			hpg_set_indicator(i, 0x00);
+		}
+		printf(
 			"    %08x    %08x\n"
 			"CLK %08x at %08x\n"
 			"LCD %08x at %08x\n"
@@ -84,6 +92,9 @@ void _start()
 			lcd, (unsigned)lcd_registers,
 			rtc, (unsigned)rtc_registers
 		);
+
+		delay(750000);
+		hpg_set_indicator(0, 0x00);
 		printf("PRESS [APLET] KEY TO EXIT");
 		while (!keyb_isAnyKeyPressed());
 		__exit_cleanup();
