@@ -54,6 +54,7 @@ void _start()
 		*const rtc_registers = (unsigned *)0x07B00000;
 
 	const unsigned
+		fin = 12, // frequency of external oscillator
 		clk = *clk_registers,
 		lcd = *lcd_registers,
 		rtc = *rtc_registers;
@@ -76,15 +77,28 @@ void _start()
 			hpg_set_indicator((i + 1) % 6, 0xFF);
 			hpg_set_indicator(i, 0x00);
 		}
+
+		const struct clk_t {
+			unsigned sdiv:  2;
+			unsigned     :  2;
+			unsigned pdiv:  6;
+			unsigned     :  2;
+			unsigned mdiv:  8;
+			unsigned     : 12;
+		} *p_clk = (struct clk_t *)&clk;
+
+		float mpll = (float)fin *
+			(p_clk->mdiv + 8) / ((p_clk->pdiv + 2) << p_clk->sdiv);
+
 		printf(
 			"    %08x    %08x\n"
-			"CLK %08x at %08x\n"
+			"CLK %08x (%.2f MHz)\n"
 			"LCD %08x at %08x\n"
 			"RTC %08x at %08x\n"
 			"\n",
 			0x01234567,
 			0x89abcdef,
-			clk, (unsigned)clk_registers,
+			clk, mpll,
 			lcd, (unsigned)lcd_registers,
 			rtc, (unsigned)rtc_registers
 		);
