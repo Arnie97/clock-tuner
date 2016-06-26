@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <hpgcc49.h>
 
+#define delay(t) { volatile int i = (t); while (i--); }
+
 extern unsigned int *__exit_stk_state;
 extern int _exit_save(unsigned int *ptr);
 extern void __exit_cleanup();
@@ -45,6 +47,16 @@ void _start()
 	unsigned state_buffer[4], lcd_buffer[17], clk_buffer[6];
 	__exit_stk_state = state_buffer;
 
+	volatile unsigned
+		*const clk_registers = (unsigned *)0x07200004,
+		*const lcd_registers = (unsigned *)0x07300000,
+		*const rtc_registers = (unsigned *)0x07B00000;
+
+	const unsigned
+		clk = *clk_registers,
+		lcd = *lcd_registers,
+		rtc = *rtc_registers;
+
 	// turn interrupts off so we can use the screen
 	sys_intOff();
 
@@ -58,7 +70,20 @@ void _start()
 	// will return 0 when exitting
 	if (_exit_save((unsigned *)state_buffer)) {
 		clear_screen();
-		printf("Hello World!\n\n");
+		printf(
+			"SYSTEM INFORMATION\n\n"
+			"Build 20160626 by Arnie97\n\n"
+			"    %08x    %08x\n"
+			"CLK %08x at %08x\n"
+			"LCD %08x at %08x\n"
+			"RTC %08x at %08x\n"
+			"\n",
+			0x01234567,
+			0x89abcdef,
+			clk, (unsigned)clk_registers,
+			lcd, (unsigned)lcd_registers,
+			rtc, (unsigned)rtc_registers
+		);
 		printf("PRESS [APLET] KEY TO EXIT");
 		while (!keyb_isAnyKeyPressed());
 		__exit_cleanup();
