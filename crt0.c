@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <hpgcc49.h>
 #include <hpgraphics.h>
+#include "mpll.h"
 
 #define delay(t) { volatile int i = (t); while (i--); }
 
@@ -32,7 +33,8 @@ extern void __exit_cleanup();
 unsigned __display_buf;
 
 
-void _start()
+void
+_start(void)
 {
 	// read in the video buffer address
 	// it assumes that the MMU mappings haven't changed
@@ -54,7 +56,6 @@ void _start()
 		*const rtc_registers = (unsigned *)0x07B00000;
 
 	const unsigned
-		fin = 12, // frequency of external oscillator
 		clk = *clk_registers,
 		lcd = *lcd_registers,
 		rtc = *rtc_registers;
@@ -78,18 +79,7 @@ void _start()
 			hpg_set_indicator(i, 0x00);
 		}
 
-		const struct clk_t {
-			unsigned sdiv:  2;
-			unsigned     :  2;
-			unsigned pdiv:  6;
-			unsigned     :  2;
-			unsigned mdiv:  8;
-			unsigned     : 12;
-		} *p_clk = (struct clk_t *)&clk;
-
-		float mpll = (float)fin *
-			(p_clk->mdiv + 8) / ((p_clk->pdiv + 2) << p_clk->sdiv);
-
+		float mpll = mpllcon_to_freq(&clk);
 		printf(
 			"    %08x    %08x\n"
 			"CLK %08x (%.2f MHz)\n"
