@@ -20,10 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <hpgcc49.h>
-#include <hpgraphics.h>
-#include "mpll.h"
-
-#define delay(t) { volatile int i = (t); while (i--); }
+#include "main.h"
 
 extern unsigned int *__exit_stk_state;
 extern int _exit_save(unsigned int *ptr);
@@ -50,12 +47,6 @@ _start(void)
 	unsigned state_buffer[4], lcd_buffer[17];
 	__exit_stk_state = state_buffer;
 
-	// remapped registers' addresses
-	volatile unsigned
-		*const clk = (unsigned *)0x07200004,
-		*const lcd = (unsigned *)0x07300000,
-		*const rtc = (unsigned *)0x07B00000;
-
 	// turn interrupts off so we can use the screen
 	sys_intOff();
 
@@ -64,38 +55,7 @@ _start(void)
 
 	// will return 0 when exitting
 	if (_exit_save((unsigned *)state_buffer)) {
-		clear_screen();
-		printf(
-			"SYSTEM INFORMATION\n\n"
-			"Build 20160626 by Arnie97\n\n"
-		);
-		for (int i = 0; i < 6; i++) {
-			delay(500000);
-			hpg_set_indicator((i + 1) % 6, 0xFF);
-			hpg_set_indicator(i, 0x00);
-		}
-
-		const char *msg[] = {
-			"UNKNOWN", "DEFAULT", "CHANGED", "PROFILE"
-		};
-		float mpll = mpllcon_to_freq(clk);
-		int status = is_valid_mpllcon(clk);
-		printf(
-			"CLK %08x at %08x\n"
-			"    (%.2f MHz, %s %s)\n"
-			"LCD %08x at %08x\n"
-			"RTC %08x at %08x\n"
-			"\n",
-			*clk, (unsigned)clk,
-			mpll, msg[status], msg[4],
-			*lcd, (unsigned)lcd,
-			*rtc, (unsigned)rtc
-		);
-
-		delay(750000);
-		hpg_set_indicator(0, 0x00);
-		printf("PRESS [APLET] KEY TO EXIT");
-		while (!keyb_isAnyKeyPressed());
+		show_system_info();
 		__exit_cleanup();
 	}
 
