@@ -22,5 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define _MAIN_H
 
 void show_system_info(void);
+void show_freq_config(int page);
 
 #endif

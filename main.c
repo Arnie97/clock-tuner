@@ -30,7 +30,7 @@ show_system_info(void)
 {
 	clear_screen();
 	printf(
-		"SYSTEM INFORMATION\n\n"
+		"FREQUENCY TUNER\n\n"
 		"Build 20160627 by Arnie97\n\n"
 	);
 	for (int i = 0; i < 6; i++) {
@@ -65,6 +65,48 @@ show_system_info(void)
 
 	delay(750000);
 	hpg_set_indicator(0, 0x00);
-	printf("PRESS [APLET] KEY TO EXIT");
+	printf(
+		"CONFIG: [PLOT]   EXIT:    [APLET]"
+		"ABOUT:  [SYMB]   REFRESH: [HOME]"
+	);
+	while (!keyb_isAnyKeyPressed());
+}
+
+
+void
+show_freq_config(int page)
+{
+	while (keyb_isAnyKeyPressed());
+	clear_screen();
+	printf(
+		"SELECT YOUR DESIRED FREQUENCY:\n\n"
+	);
+
+	int beg, end;
+	char c = 'A';
+	if (page == 0) {
+		for (int i = 6; i >= 0; i--) {
+			unsigned clkslow = 0x10 | i;
+			printf(
+				"[%c] %-7.2f",
+				c++, clkslow_to_freq(&clkslow, FIN)
+			);
+		}
+		beg = 0, end = 8;
+	} else {
+		beg = 8, end = 22;
+	}
+	for (int i = beg; i < end; i++) {
+		printf(
+			"[%c] %-7.2f",
+			c++, mpllcon_to_freq(valid_mpllcon_values + i, FIN)
+		);
+	}
+	gotoxy(0, 8);
+	printf(
+		"BACK:   [HOME]   EXIT:    [APLET]"
+		"ABOUT:  [SYMB]   %s:    [%s]",
+		page? "PREV": "NEXT", page? "UP": "DOWN"
+	);
 	while (!keyb_isAnyKeyPressed());
 }

@@ -34,7 +34,7 @@ LDFLAGS := -L$(LIB) -T MMUld.script \
 	-lwin -lggl -lhpg -lhplib -lgcc
 
 
-all: sys_probe.apt
+all: clock_tuner.apt
 
 clean:
 	rm *.o *.elf *.hp
