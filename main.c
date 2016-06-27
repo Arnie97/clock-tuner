@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <hpgraphics.h>
 #include "s3c2410.h"
 #include "mpllcon.h"
+#include "clkslow.h"
 
 
 void
@@ -38,17 +39,28 @@ show_system_info(void)
 		hpg_set_indicator(i, 0x00);
 	}
 
-	int status = is_valid_mpllcon(MPLLCON);
-	float mpll = mpllcon_to_freq(MPLLCON, FIN);
+	int status;
+	float fclk = clkslow_to_freq(CLKSLOW, FIN);
+	if (fclk) {
+		// slow mode
+		status = 4;
+	} else {
+		// normal mode
+		fclk = mpllcon_to_freq(MPLLCON, FIN);
+		status = is_valid_mpllcon(MPLLCON);
+	}
 	const char *msg[] = {
-		"UNKNOWN", "DEFAULT", "CHANGED", "PROFILE"
+		"UNKNOWN", "DEFAULT", "CHANGED", "PROFILE",
+		"SLOW MODE", "ENABLED"
 	};
 	printf(
 		"MPLLCON %08x at %08x\n"
+		"CLKSLOW %08x at %08x\n"
 		"  (%.2f MHz, %s %s)\n"
 		"\n",
 		*MPLLCON, (unsigned)MPLLCON,
-		mpll, msg[status], msg[3]
+		*CLKSLOW, (unsigned)CLKSLOW,
+		fclk, msg[status], msg[status == 4? 5: 3]
 	);
 
 	delay(750000);
