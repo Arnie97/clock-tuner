@@ -1,5 +1,6 @@
-/* S3C2410 hardware definitions
+/* HP 39g+ / 39gs / 40gs series keyboard input module
 
+Copyright (C) 2005 The HP-GCC Development Team
 Copyright (C) 2016 Arnie97
 
 This program is free software; you can redistribute it and/or modify
@@ -18,15 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
+#ifndef _HP39KBD_H
+#define _HP39KBD_H
+
 #include "s3c2410.h"
+#define any_key_pressed ((*GPGDAT & 0xFE) != 0xFE)
 
-// remapped addresses of clock registers
-volatile unsigned
-	*const GPGCON  = (unsigned *)0x07A00060,
-	*const GPGDAT  = (unsigned *)0x07A00064,
-	*const MPLLCON = (unsigned *)0x07200004,
-	*const CLKSLOW = (unsigned *)0x07200010,
-	*const CLKDIVN = (unsigned *)0x07200014;
+int get_key(int (*handler)(unsigned row, unsigned col));
 
-// frequency of external oscillator
-const unsigned FIN = 12;
+#endif

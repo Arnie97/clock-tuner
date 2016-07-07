@@ -21,17 +21,57 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <hpgcc49.h>
 #include <hpgraphics.h>
 #include "s3c2410.h"
+#include "hp39kbd.h"
 #include "mpllcon.h"
 #include "clkslow.h"
+#include "main.h"
 
 
-void
+int
+event_handler(unsigned row, unsigned col)
+{
+	// [SYMB], [APLET], [VIEW]
+	if (row == 5 && col == 6 || row == 7) {
+		// exit immediately
+		return -1;
+	} else {
+		// wait until the key is released
+		while (any_key_pressed);
+	}
+
+	// [UP]: 0, [DOWN]: 2, [PLOT]: 4, [HOME]: 6
+	if (row == 6 && !(col & 1)) {
+		return (col >> 1) + 1;
+	} else if (row <= 4) {
+		int ch = col * 5 - row + 'D';  // letter keys
+		if (ch == 'D') {
+			return 0;  // [DEL]
+		} else if (ch < 'D') {
+			ch++;  // skip the [DEL] key after [D]
+		} else if (ch >= 'T') {
+			ch--;  // skip the [ALPHA] key before [T]
+			if (ch >= 'X') {
+				ch--;  // skip the [SHIFT] key before [X]
+				if (ch > 'Z') {
+					return 0;
+				}
+			}
+		}
+		return ch;
+	}
+
+	// unhandled keys
+	return 0;
+}
+
+
+int
 show_system_info(void)
 {
 	clear_screen();
 	printf(
 		"FREQUENCY TUNER\n\n"
-		"Build 20160627 by Arnie97\n\n"
+		"Build 20160707 by Arnie97\n\n"
 	);
 	for (int i = 0; i < 6; i++) {
 		delay(500000);
@@ -69,14 +109,23 @@ show_system_info(void)
 		"CONFIG: [PLOT]   EXIT:    [APLET]"
 		"ABOUT:  [SYMB]   REFRESH: [HOME]"
 	);
-	while (!keyb_isAnyKeyPressed());
+
+	for (;;) {
+		switch (get_key(event_handler)) {
+		case 3:  // [PLOT]
+			return show_freq_config(0);
+		case 4:  // [HOME]
+			return show_system_info();
+		case -1:
+			return 0;  // exit program
+		}
+	}
 }
 
 
-void
+int
 show_freq_config(int page)
 {
-	while (keyb_isAnyKeyPressed());
 	clear_screen();
 	printf(
 		"SELECT YOUR DESIRED FREQUENCY:\n\n"
@@ -108,5 +157,22 @@ show_freq_config(int page)
 		"ABOUT:  [SYMB]   %s:    [%s]",
 		page? "PREV": "NEXT", page? "UP": "DOWN"
 	);
-	while (!keyb_isAnyKeyPressed());
+
+	for (;;) {
+		switch (get_key(event_handler)) {
+		case 3:  // [PLOT]
+		case 1:  // [UP]
+			return show_freq_config(0);
+		case 2:  // [DOWN]
+			return show_freq_config(1);
+		case 4:  // [HOME]
+			return show_system_info();
+		case -1:
+			return 0;  // exit program
+		case 0:
+			continue;
+		default:  // letter keys
+			return 0;  // TODO: frequency change confirming page
+		}
+	}
 }

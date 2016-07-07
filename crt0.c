@@ -56,8 +56,6 @@ _start(void)
 	// will return 0 when exitting
 	if (_exit_save((unsigned *)state_buffer)) {
 		show_system_info();
-		show_freq_config(0);
-		show_freq_config(1);
 		__exit_cleanup();
 	}
 
