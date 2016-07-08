@@ -28,9 +28,9 @@ get_key(int (*handler)(unsigned row, unsigned col))
 	// wait until a key is pressed
 	while (!any_key_pressed);
 
-	for (unsigned c = 0; c < 7; c++) {
+	for (unsigned c = 0; c < 8; c++) {
 		// set the current column pin to output, others inputs
-		*(unsigned short *)GPGCON = 1 << (c * 2);
+		*GPGCON = (1 << 16 << c * 2) | 0xAAA9;
 		delay(100);
 
 		// skip this column if no key in it is pressed
@@ -41,7 +41,7 @@ get_key(int (*handler)(unsigned row, unsigned col))
 			// check whether a row is active
 			if (!(*GPGDAT & (1 << r + 1))) {
 				// restore all column pins to output
-				*(unsigned short *)GPGCON = 0x5555;
+				*GPGCON = 0x5555AAA9;
 				delay(100);
 
 				// call the event handler and return

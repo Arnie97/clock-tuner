@@ -30,8 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int
 event_handler(unsigned row, unsigned col)
 {
-	// [SYMB], [APLET], [VIEW]
-	if (row == 5 && col == 6 || row == 7) {
+	// [SYMB], [APLET]
+	if (row == 6 && col == 5 || row == 0 && col == 7) {
 		// exit immediately
 		return -1;
 	} else {
@@ -40,10 +40,10 @@ event_handler(unsigned row, unsigned col)
 	}
 
 	// [UP]: 0, [DOWN]: 2, [PLOT]: 4, [HOME]: 6
-	if (row == 6 && !(col & 1)) {
-		return (col >> 1) + 1;
-	} else if (row <= 4) {
-		int ch = col * 5 - row + 'D';  // letter keys
+	if (col == 6 && !(row & 1)) {
+		return (row >> 1) + 1;
+	} else if (row <= 6 && col <= 4) {
+		int ch = row * 5 - col + 'D';  // letter keys
 		if (ch == 'D') {
 			return 0;  // [DEL]
 		} else if (ch < 'D') {
