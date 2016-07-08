@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef _MAIN_H
 #define _MAIN_H
 
+int event_handler(unsigned row, unsigned col);
 int show_system_info(void);
 int show_freq_config(int page);
 

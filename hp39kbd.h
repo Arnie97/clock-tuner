@@ -25,6 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "s3c2410.h"
 #define any_key_pressed ((*GPGDAT & 0xFE) != 0xFE)
 
-int get_key(int (*handler)(unsigned row, unsigned col));
+int get_key(void);
 
 #endif

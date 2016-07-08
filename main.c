@@ -111,7 +111,7 @@ show_system_info(void)
 	);
 
 	for (;;) {
-		switch (get_key(event_handler)) {
+		switch (get_key()) {
 		case 3:  // [PLOT]
 			return show_freq_config(0);
 		case 4:  // [HOME]
@@ -159,7 +159,7 @@ show_freq_config(int page)
 	);
 
 	for (;;) {
-		switch (get_key(event_handler)) {
+		switch (get_key()) {
 		case 3:  // [PLOT]
 		case 1:  // [UP]
 			return show_freq_config(0);

@@ -19,11 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
+#include "s3c2410.h"
 #include "hp39kbd.h"
+#include "main.h"
 
 
 int
-get_key(int (*handler)(unsigned row, unsigned col))
+get_key(void)
 {
 	// wait until a key is pressed
 	while (!any_key_pressed);
@@ -44,13 +46,12 @@ get_key(int (*handler)(unsigned row, unsigned col))
 				*GPGCON = 0x5555AAA9;
 				delay(100);
 
-				// call the event handler and return
-				// at the first detected key press
-				return handler(r, c);
+				// return at the first detected key press
+				return event_handler(r, c);
 			}
 		}
 	}
 
 	// the key was released before it could be captured, hence try again
-	return get_key(handler);
+	return get_key();
 }
