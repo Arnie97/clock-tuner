@@ -159,20 +159,18 @@ show_freq_config(int page)
 	);
 
 	for (;;) {
-		switch (get_key()) {
-		case 3:  // [PLOT]
-		case 1:  // [UP]
+		int k = get_key();
+		if (k == 1 || k == 3)  // [UP], [PLOT]
 			return show_freq_config(0);
-		case 2:  // [DOWN]
+		else if (k == 2)  // [DOWN]
 			return show_freq_config(1);
-		case 4:  // [HOME]
+		else if (k == 4)  // [HOME]
 			return show_system_info();
-		case -1:
+		else if (k == -1)
 			return 0;  // exit program
-		case 0:
+		else if (k == 0)
 			continue;
-		default:  // letter keys
-			return 0;  // TODO: frequency change confirming page
-		}
+		else  // letter keys
+			putchar(k);  // TODO: frequency change confirming page
 	}
 }
