@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all believe clean
 
 ifeq ($(TARGET),)
     $(info Inspecting compiler to use...)
@@ -34,7 +34,9 @@ LDFLAGS := -L$(LIB) -T MMUld.script \
 	-lwin -lggl -lhpg -lhplib -lgcc
 
 
-all: clock_tuner.apt
+all: clock_tuner.apt hp39dir.000
+
+believe: clock_tuner.apt
 
 clean:
 	rm *.o *.elf *.hp
@@ -50,3 +52,6 @@ clean:
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+hp39dir.000:
+	echo "HP39AscA B 15 clock_tuner.apt11 Clock Tuner H 10 lib275.sys7 LIB275L " > $@
