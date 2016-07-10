@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
-#include <hpgcc49.h>
+#include <hpsys.h>
 #include "main.h"
 
 extern unsigned int *__exit_stk_state;

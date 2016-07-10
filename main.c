@@ -18,7 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
-#include <hpgcc49.h>
+#include <hpstdio.h>
+#include <hpconio.h>
 #include <hpgraphics.h>
 #include "s3c2410.h"
 #include "hp39kbd.h"
