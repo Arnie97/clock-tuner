@@ -29,6 +29,12 @@ get_key(void)
 {
 	// wait until a key is pressed
 	while (!any_key_pressed);
+	// deal with the modifier keys
+	if (comma_pressed) {
+		return event_handler(3, 4);
+	} else if (!any_normal_key_pressed) {
+		return 0;
+	}
 
 	for (unsigned c = 0; c < 8; c++) {
 		// set the current column pin to output, others inputs

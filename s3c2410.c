@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // remapped addresses of clock registers
 volatile unsigned
+	*const GPFDAT  = (unsigned *)0x07A00054,
 	*const GPGCON  = (unsigned *)0x07A00060,
 	*const GPGDAT  = (unsigned *)0x07A00064,
 	*const MPLLCON = (unsigned *)0x07200004,

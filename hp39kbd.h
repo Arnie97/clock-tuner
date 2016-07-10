@@ -23,7 +23,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define _HP39KBD_H
 
 #include "s3c2410.h"
-#define any_key_pressed ((*GPGDAT & 0xFE) != 0xFE)
+
+#define modifier_key_pressed(bit) ((*GPFDAT >> (bit)) & 1)
+#define on_pressed    modifier_key_pressed(0)
+#define comma_pressed modifier_key_pressed(4)
+#define alpha_pressed modifier_key_pressed(5)
+#define shift_pressed modifier_key_pressed(6)
+#define hp49_alpha_pressed comma_pressed
+#define hp49_ls_pressed alpha_pressed
+#define hp49_rs_pressed shift_pressed
+
+#define any_normal_key_pressed ((*GPGDAT & 0xFE) != 0xFE)
+#define any_key_pressed ( \
+	any_normal_key_pressed || on_pressed || \
+	comma_pressed || alpha_pressed || shift_pressed \
+)
 
 int get_key(void);
 
