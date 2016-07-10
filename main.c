@@ -73,8 +73,8 @@ show_system_info(void)
 {
 	clear_screen();
 	printf(
-		"FREQUENCY TUNER\n\n"
-		"Build 20160707 by Arnie97\n\n"
+		"Clock Tuner for HP 39g+\n\n"
+		"Build 20160710 by Arnie97\n\n"
 	);
 	for (int i = 0; i < 6; i++) {
 		delay(500000);
@@ -99,8 +99,7 @@ show_system_info(void)
 	printf(
 		"MPLLCON %08x at %08x\n"
 		"CLKSLOW %08x at %08x\n"
-		"  (%.2f MHz, %s %s)\n"
-		"\n",
+		"  (%.2f MHz, %s %s)\n",
 		*MPLLCON, (unsigned)MPLLCON,
 		*CLKSLOW, (unsigned)CLKSLOW,
 		fclk, msg[status], msg[status == 4? 5: 3]
@@ -108,9 +107,10 @@ show_system_info(void)
 
 	delay(750000);
 	hpg_set_indicator(0, 0x00);
+	gotoxy(0, 8);
 	printf(
-		"CONFIG: [PLOT]   EXIT:    [APLET]"
-		"ABOUT:  [SYMB]   REFRESH: [HOME]"
+		"Config: [PLOT]   Exit:    [APLET]"
+		"About:  [SYMB]   Refresh: [HOME]"
 	);
 
 	for (;;) {
@@ -131,7 +131,7 @@ show_freq_config(int page)
 {
 	clear_screen();
 	printf(
-		"SELECT YOUR DESIRED FREQUENCY:\n\n"
+		"Select your desired frequency:\n\n"
 	);
 
 	int beg, end;
@@ -156,9 +156,9 @@ show_freq_config(int page)
 	}
 	gotoxy(0, 8);
 	printf(
-		"BACK:   [HOME]   EXIT:    [APLET]"
-		"ABOUT:  [SYMB]   %s:    [%s]",
-		page? "PREV": "NEXT", page? "UP": "DOWN"
+		"Back:   [HOME]   Exit:    [APLET]"
+		"About:  [SYMB]   %s:    [%s]",
+		page? "Prev": "Next", page? "UP": "DOWN"
 	);
 
 	for (;;) {
