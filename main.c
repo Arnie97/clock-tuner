@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
+#include <hpsys.h>
 #include <hpstdio.h>
 #include <hpconio.h>
 #include <hpgraphics.h>
@@ -77,7 +78,7 @@ show_system_info(void)
 		"Build 20160710 by Arnie97\n\n"
 	);
 	for (int i = 0; i < 6; i++) {
-		delay(500000);
+		delay(300000);
 		hpg_set_indicator((i + 1) % 6, 0xFF);
 		hpg_set_indicator(i, 0x00);
 	}
@@ -105,7 +106,7 @@ show_system_info(void)
 		fclk, msg[status], msg[status == 4? 5: 3]
 	);
 
-	delay(750000);
+	delay(500000);
 	hpg_set_indicator(0, 0x00);
 	gotoxy(0, 8);
 	printf(
@@ -224,6 +225,34 @@ show_freq_confirm(int choice)
 		else if (k == 5)  // [SYMB], [APLET]
 			return 0;  // exit program
 		else if (k == 6)  // [ENTER]
-			return 0;  // TODO: detonate the A-bomb
+			return show_freq_change(mpllcon, clkslow);
+	}
+}
+
+
+int
+show_freq_change(unsigned mpllcon, unsigned clkslow)
+{
+	clear_screen();
+	printf("Working hard, please hold on...\n\n");
+	sys_LCDSynch();
+	*MPLLCON = mpllcon;
+	*CLKSLOW = clkslow;
+	sys_lcdfix();
+	delay(100000);
+	printf("Well done.");
+	gotoxy(0, 8);
+	printf(
+		"Back:   [HOME]   Exit:    [APLET]"
+		"About:  [SYMB]   Refresh: [PLOT]"
+	);
+	for (;;) {
+		int k = get_key();
+		if (k == 3)  // [PLOT]
+			return show_freq_config(0);
+		else if (k == 4)  // [HOME]
+			return show_system_info();
+		else if (k == 5)  // [SYMB], [APLET]
+			return 0;  // exit program
 	}
 }
