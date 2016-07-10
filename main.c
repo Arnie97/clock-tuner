@@ -34,7 +34,7 @@ event_handler(unsigned row, unsigned col)
 	// [SYMB], [APLET]
 	if (row == 6 && col == 5 || row == 0 && col == 7) {
 		// exit immediately
-		return -1;
+		return 5;
 	} else {
 		// wait until the key is released
 		while (any_key_pressed);
@@ -53,7 +53,9 @@ event_handler(unsigned row, unsigned col)
 			ch--;  // skip the [ALPHA] key before [T]
 			if (ch >= 'X') {
 				ch--;  // skip the [SHIFT] key before [X]
-				if (ch > 'Z') {
+				if (row == 6 && col == 0) {
+					return 6;  // [ENTER]
+				} else if (ch > 'Z') {
 					return 0;
 				}
 			}
@@ -117,7 +119,7 @@ show_system_info(void)
 			return show_freq_config(0);
 		case 4:  // [HOME]
 			return show_system_info();
-		case -1:
+		case 5:  // [SYMB], [APLET]
 			return 0;  // exit program
 		}
 	}
@@ -161,17 +163,67 @@ show_freq_config(int page)
 
 	for (;;) {
 		int k = get_key();
-		if (k == 1 || k == 3)  // [UP], [PLOT]
+		if (k == 0)  // unknown keys
+			continue;
+		else if (k == 1 || k == 3)  // [UP], [PLOT]
 			return show_freq_config(0);
 		else if (k == 2)  // [DOWN]
 			return show_freq_config(1);
 		else if (k == 4)  // [HOME]
 			return show_system_info();
-		else if (k == -1)
+		else if (k == 5)  // [SYMB], [APLET]
 			return 0;  // exit program
-		else if (k == 0)
-			continue;
-		else  // letter keys
-			putchar(k);  // TODO: frequency change confirming page
+		else if ('A' <= k && k < c)  // letter keys
+			return show_freq_confirm(end - c + k);
+	}
+}
+
+
+int
+show_freq_confirm(int choice)
+{
+	clear_screen();
+
+	// get register config for the selected frequency
+	unsigned mpllcon = valid_mpllcon_values[choice < 0? 0: choice];
+	unsigned clkslow = choice < 0? 0x10 | (-choice - 1): 0x4;
+
+	// calculate human readable frequencies
+	float fclk1 = clkslow_to_freq(CLKSLOW, FIN);
+	if (!fclk1) {
+		fclk1 = mpllcon_to_freq(MPLLCON, FIN);
+	}
+	float fclk2 = clkslow_to_freq(&clkslow, FIN);
+	if (!fclk2) {
+		fclk2 = mpllcon_to_freq(&mpllcon, FIN);
+	}
+
+	printf(
+		"WARNING!\n"
+		"THIS OPERATION MAY DAMAGE YOUR\n"
+		"DEVICE. USE AT YOUR OWN RISK.\n"
+		"\n"
+		"MPLLCON: %08x -> %08x\n"
+		"CLKSLOW: %08x -> %08x\n"
+		"(Clock: %.2f Mhz -> %.2f MHz)\n",
+		*MPLLCON, mpllcon, *CLKSLOW, clkslow,
+		fclk1, fclk2
+	);
+	gotoxy(0, 8);
+	printf(
+		"Back:   [HOME]   Exit:    [APLET]"
+		"OK:     [ENTER]  Cancel:  [PLOT]"
+	);
+
+	for (;;) {
+		int k = get_key();
+		if (k == 3)  // [PLOT]
+			return show_freq_config(0);
+		else if (k == 4)  // [HOME]
+			return show_system_info();
+		else if (k == 5)  // [SYMB], [APLET]
+			return 0;  // exit program
+		else if (k == 6)  // [ENTER]
+			return 0;  // TODO: detonate the A-bomb
 	}
 }
