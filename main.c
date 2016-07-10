@@ -147,7 +147,7 @@ show_freq_config(int page)
 		}
 		beg = 0, end = 8;
 	} else {
-		beg = 8, end = 22;
+		beg = 8, end = 23;
 	}
 	for (int i = beg; i < end; i++) {
 		printf(
