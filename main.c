@@ -28,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clkslow.h"
 #include "main.h"
 
+const char title[] = "Clock Tuner for HP 39g+";
+
 
 int
 event_handler(unsigned row, unsigned col)
@@ -76,8 +78,9 @@ show_system_info(void)
 {
 	clear_screen();
 	printf(
-		"Clock Tuner for HP 39g+\n\n"
-		"Build 20160710 by Arnie97\n\n"
+		"%s\n\n"
+		"v1.1 build 20160711 by Arnie97\n\n",
+		title
 	);
 	for (int i = 0; i < 6; i++) {
 		delay(300000);
@@ -117,14 +120,15 @@ show_system_info(void)
 	);
 
 	for (;;) {
-		switch (get_key()) {
-		case 3:  // [PLOT]
+		int k = get_key();
+		if (k == 3)  // [PLOT]
 			return show_freq_config(0);
-		case 4:  // [HOME]
+		else if (k == 4)  // [HOME]
 			return show_system_info();
-		case 5:  // [APLET]
+		else if (k == 5)  // [APLET]
 			return 0;  // exit program
-		}
+		else if (k == 7)  // [SYMB]
+			return show_credits();
 	}
 }
 
@@ -176,6 +180,8 @@ show_freq_config(int page)
 			return show_system_info();
 		else if (k == 5)  // [APLET]
 			return 0;  // exit program
+		else if (k == 7)  // [SYMB]
+			return show_credits();
 		else if ('A' <= k && k < c)  // letter keys
 			return show_freq_confirm(end - c + k);
 	}
@@ -247,6 +253,38 @@ show_freq_change(unsigned mpllcon, unsigned clkslow)
 	printf(
 		"Back:    [HOME]   Exit:   [APLET]"
 		"Config:  [PLOT]   About:  [SYMB]"
+	);
+	for (;;) {
+		int k = get_key();
+		if (k == 3)  // [PLOT]
+			return show_freq_config(0);
+		else if (k == 4)  // [HOME]
+			return show_system_info();
+		else if (k == 5)  // [APLET]
+			return 0;  // exit program
+		else if (k == 7)  // [SYMB]
+			return show_credits();
+	}
+}
+
+
+int
+show_credits(void)
+{
+	clear_screen();
+	printf(
+		"%s\n\n"
+		"Copyright (C) 2005 HP-GCC Team\n"
+		"Copyright (C) 2016 Arnie97\n"
+		"\n"
+		"Clock Tuner is free software; it "
+		"comes with absolutely no warranty"
+		"See file 'LICENSE' for details.",
+		title
+	);
+	gotoxy(0, 9);
+	printf(
+		"Back:   [HOME]    Config: [PLOT]"
 	);
 	for (;;) {
 		int k = get_key();
