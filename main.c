@@ -186,7 +186,7 @@ show_freq_confirm(int choice)
 	clear_screen();
 
 	// get register config for the selected frequency
-	unsigned mpllcon = valid_mpllcon_values[choice < 0? 0: choice];
+	unsigned mpllcon = valid_mpllcon_values[choice < 0? 7: choice];
 	unsigned clkslow = choice < 0? 0x10 | (-choice - 1): 0x4;
 
 	// calculate human readable frequencies
