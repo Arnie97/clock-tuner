@@ -44,23 +44,17 @@ _start(void)
 	__scr_h = (sys_lcdgetheight() == 64)? 10: 13;
 
 	// declare locally to reduce executable size
-	unsigned state_buffer[4], lcd_buffer[17];
+	unsigned state_buffer[4];
 	__exit_stk_state = state_buffer;
 
 	// turn interrupts off so we can use the screen
 	sys_intOff();
-
-	// save current hardware state
-	sys_lcdsave(lcd_buffer);
 
 	// will return 0 when exitting
 	if (_exit_save((unsigned *)state_buffer)) {
 		show_system_info();
 		__exit_cleanup();
 	}
-
-	// restore original hardware values
-	sys_lcdrestore(lcd_buffer);
 
 	// turn interrupts on for the OS
 	sys_intOn();

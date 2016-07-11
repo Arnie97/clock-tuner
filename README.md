@@ -26,9 +26,9 @@ following answer to choose a proper frequency.
 
 ##### Can I use this tool to overclock my device?
 - Yes, of course. ***However, it is recommended to limit your clock between
-30 MHz and 110 MHz.***
+10 MHz and 110 MHz.***
 - Clocks out of this range may also work inside this aplet, but could make
-your system and aplets crash or get stuck.
+your system and aplets crash, reset or get stuck.
 - ***Clocks higher than 200 MHz are highly deprecated and only preserved
 for experimental usage.***
 - If you've already triggered a system crash, the next answer might be helpful.
