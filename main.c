@@ -32,8 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int
 event_handler(unsigned row, unsigned col)
 {
-	// [SYMB], [APLET]
-	if (row == 6 && col == 5 || row == 0 && col == 7) {
+	// [APLET]
+	if (row == 0 && col == 7) {
 		// exit immediately
 		return 5;
 	} else {
@@ -62,6 +62,8 @@ event_handler(unsigned row, unsigned col)
 			}
 		}
 		return ch;
+	} else if (row == 6 && col == 5) {
+		return 7;  // [SYMB]
 	}
 
 	// unhandled keys
@@ -110,8 +112,8 @@ show_system_info(void)
 	hpg_set_indicator(0, 0x00);
 	gotoxy(0, 8);
 	printf(
-		"Config: [PLOT]   Exit:    [APLET]"
-		"About:  [SYMB]   Refresh: [HOME]"
+		"Config:  [PLOT]   Exit:   [APLET]"
+		"Refresh: [HOME]   About:  [SYMB]"
 	);
 
 	for (;;) {
@@ -120,7 +122,7 @@ show_system_info(void)
 			return show_freq_config(0);
 		case 4:  // [HOME]
 			return show_system_info();
-		case 5:  // [SYMB], [APLET]
+		case 5:  // [APLET]
 			return 0;  // exit program
 		}
 	}
@@ -157,8 +159,8 @@ show_freq_config(int page)
 	}
 	gotoxy(0, 8);
 	printf(
-		"Back:   [HOME]   Exit:    [APLET]"
-		"About:  [SYMB]   %s:    [%s]",
+		"Back:    [HOME]   Exit:   [APLET]"
+		"About:   [SYMB]   %s:   [%s]",
 		page? "Prev": "Next", page? "UP": "DOWN"
 	);
 
@@ -172,7 +174,7 @@ show_freq_config(int page)
 			return show_freq_config(1);
 		else if (k == 4)  // [HOME]
 			return show_system_info();
-		else if (k == 5)  // [SYMB], [APLET]
+		else if (k == 5)  // [APLET]
 			return 0;  // exit program
 		else if ('A' <= k && k < c)  // letter keys
 			return show_freq_confirm(end - c + k);
@@ -212,8 +214,8 @@ show_freq_confirm(int choice)
 	);
 	gotoxy(0, 8);
 	printf(
-		"Back:   [HOME]   Exit:    [APLET]"
-		"OK:     [ENTER]  Cancel:  [PLOT]"
+		"Back:    [HOME]   Exit:   [APLET]"
+		"OK:      [ENTER]  Cancel: [PLOT]"
 	);
 
 	for (;;) {
@@ -222,7 +224,7 @@ show_freq_confirm(int choice)
 			return show_freq_config(0);
 		else if (k == 4)  // [HOME]
 			return show_system_info();
-		else if (k == 5)  // [SYMB], [APLET]
+		else if (k == 5)  // [APLET]
 			return 0;  // exit program
 		else if (k == 6)  // [ENTER]
 			return show_freq_change(mpllcon, clkslow);
@@ -243,8 +245,8 @@ show_freq_change(unsigned mpllcon, unsigned clkslow)
 	printf("Well done.");
 	gotoxy(0, 8);
 	printf(
-		"Back:   [HOME]   Exit:    [APLET]"
-		"About:  [SYMB]   Refresh: [PLOT]"
+		"Back:    [HOME]   Exit:   [APLET]"
+		"Config:  [PLOT]   About:  [SYMB]"
 	);
 	for (;;) {
 		int k = get_key();
@@ -252,7 +254,7 @@ show_freq_change(unsigned mpllcon, unsigned clkslow)
 			return show_freq_config(0);
 		else if (k == 4)  // [HOME]
 			return show_system_info();
-		else if (k == 5)  // [SYMB], [APLET]
+		else if (k == 5)  // [APLET]
 			return 0;  // exit program
 	}
 }
