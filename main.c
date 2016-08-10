@@ -36,7 +36,7 @@ event_handler(unsigned row, unsigned col)
 	// [APLET]
 	if (row == 0 && col == 7) {
 		// exit immediately
-		return 5;
+		return 25;
 	} else {
 		// wait until the key is released
 		while (any_key_pressed);
@@ -45,24 +45,8 @@ event_handler(unsigned row, unsigned col)
 	// [UP]: 0, [LEFT]: 1, [DOWN]: 2, [RIGHT]: 3
 	if (col == 6 && row < 4) {
 		return row + 20;
-	} else if (row <= 6 && col <= 4) {
-		int ch = row * 5 - col + 'D';  // letter keys
-		if (ch == 'D') {
-			return 0;  // [DEL]
-		} else if (ch < 'D') {
-			ch++;  // skip the [DEL] key after [D]
-		} else if (ch >= 'T') {
-			ch--;  // skip the [ALPHA] key before [T]
-			if (ch >= 'X') {
-				ch--;  // skip the [SHIFT] key before [X]
-				if (row == 6 && col == 0) {
-					return 6;  // [ENTER]
-				} else if (ch > 'Z') {
-					return 0;
-				}
-			}
-		}
-		return ch;
+	} else if (3 <= row && row <= 5 && 1 <= col && col <= 3) {
+		return (6 - row) * 3 - col + 1;
 	}
 
 	// unhandled keys
@@ -119,7 +103,7 @@ note_explorer(void)
 
 	for (;;) {
 		int key = get_key();
-		if (key == 5) {
+		if (key == 25) {
 			return 0;  // exit program
 		}
 	}
