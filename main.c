@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <hpsys.h>
 #include <hpstdio.h>
 #include <hpconio.h>
+#include <hpstring.h>
 #include <hpgraphics.h>
 #include "hp39kbd.h"
 #include "main.h"
@@ -68,39 +69,38 @@ event_handler(unsigned row, unsigned col)
 
 
 int
-hex_viewer(void *address)
+note_explorer(void)
 {
 	clear_screen();
-	printf(
-		"[0x%02x]  0 1 2 3  4 5 6 7 01234567",
-		(unsigned)address >> 24
-	);
-
-	char *p = address;
-	for (int row = 1; row < 10; row++) {
-		printf(
-			"%06x %08x %08x ",
-			(unsigned)p & 0x00FFFFFF,
-			*p, *(p + 4)
-		);
-		for (int bit = 0; bit < 8; bit++, p++) {
-			#define isprint(c) ((c) >= ' ')
-			putchar(isprint(*p)? *p: '.');
+	const char shebang[] = "#!/bin/neko\n\n";
+	const unsigned len = strlen(shebang);
+	int count = 0;
+	for (char *p = 0x08000000; p + len < 0x08040000; p++) {
+		int found = 1;
+		for (const char *s = shebang, *t = p; *s; s++, t++) {
+			if (*s != *t) {
+				found = 0;
+				break;
+			}
+		}
+		if (found && p[len]) {
+			printf("%04x ", ((int)p - 0x08000000) >> 4);
+			count++;
+			if (count % 6 == 0) {
+				if (count % 60 == 0) {
+					get_key();
+					clear_screen();
+				} else {
+					putchar('\n');
+				}
+			}
 		}
 	}
-
+	printf("%d", count);
 	for (;;) {
 		int key = get_key();
 		if (key == 5) {
 			return 0;  // exit program
-		} else if (key == 20) {
-			return hex_viewer(address - 0x40);
-		} else if (key == 21) {
-			return hex_viewer(address - 0x10000);
-		} else if (key == 22) {
-			return hex_viewer(address + 0x40);
-		} else if (key == 23) {
-			return hex_viewer(address + 0x10000);
 		}
 	}
 }

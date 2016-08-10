@@ -55,7 +55,7 @@ _start(void)
 
 	// will return 0 when exitting
 	if (_exit_save((unsigned *)state_buffer)) {
-		hex_viewer(0x07A00000);
+		note_explorer();
 		__exit_cleanup();
 	}
 

@@ -22,6 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define _MAIN_H
 
 int event_handler(unsigned row, unsigned col);
-int hex_viewer(void *address);
+int note_explorer(void);
 
 #endif
