@@ -1,4 +1,5 @@
 .PHONY: all believe clean
+.SECONDARY: $(OBJ)
 
 ifeq ($(TARGET),)
     $(info Inspecting compiler to use...)
@@ -34,9 +35,9 @@ LDFLAGS := -L$(LIB) -T MMUld.script \
 	-lwin -lggl -lhpg -lhplib -lgcc
 
 
-all: clock_tuner.apt hp39dir.000
+all: believe hp39dir.000
 
-believe: clock_tuner.apt
+believe: neko_notepad.apt
 
 clean:
 	rm *.o *.elf *.hp
@@ -54,4 +55,4 @@ clean:
 	$(CC) $(CFLAGS) -c $< -o $@
 
 hp39dir.000:
-	echo "HP39AscA B 15 clock_tuner.apt11 Clock Tuner H 10 lib275.sys7 LIB275L " > $@
+	echo "HP39AscA B 16 neko_notepad.apt12 Neko Notepad H 10 lib275.sys7 LIB275L " > $@
