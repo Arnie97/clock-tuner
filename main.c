@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <stdint.h>
+#include <saturn.h>
+#include <satdir.h>
 #include <hpsys.h>
 #include <hpstdio.h>
 #include <hpconio.h>
@@ -67,36 +69,25 @@ event_handler(unsigned row, unsigned col)
 	return 0;
 }
 
-
 int
 note_explorer(void)
 {
+	SAT_DIR_NODE *dir = _sat_find_path("/'notesdir");
+	SAT_DIR_ENTRY *entry = dir->object;
+
 	clear_screen();
-	const char shebang[] = "#!/bin/neko\n\n";
-	const unsigned len = strlen(shebang);
 	int count = 0;
-	for (char *p = 0x08000000; p + len < 0x08040000; p++) {
-		int found = 1;
-		for (const char *s = shebang, *t = p; *s; s++, t++) {
-			if (*s != *t) {
-				found = 0;
-				break;
-			}
-		}
-		if (found && p[len]) {
-			printf("%04x ", ((int)p - 0x08000000) >> 4);
-			count++;
-			if (count % 6 == 0) {
-				if (count % 60 == 0) {
-					get_key();
-					clear_screen();
-				} else {
-					putchar('\n');
-				}
-			}
-		}
+	while (entry) {
+		SAT_OBJ_DSCR *obj = entry->sat_obj;
+
+		// saturn data are nibble-aligned
+		// _saturn_cpu->Read[sat_addr >> 12] + (sat_addr & 0xfff) / 2
+		printf("0x%08x %s\n", sat_map_s2a(obj->addr), obj->name);
+		entry = entry->next;
+		count++;
 	}
-	printf("%d", count);
+	printf("\n%d notes in %d entries", count / 2, count);
+
 	for (;;) {
 		int key = get_key();
 		if (key == 5) {

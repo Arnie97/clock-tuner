@@ -41,7 +41,7 @@ _start(void)
 
 	// set the screen height for the <hpstdio.h> module
 	extern int __scr_h;
-	__scr_h = 11;
+	__scr_h = 10;
 
 	// declare locally to reduce executable size
 	unsigned state_buffer[4], lcd_buffer[17];
