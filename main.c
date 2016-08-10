@@ -83,6 +83,9 @@ note_explorer(void)
 		// saturn data are nibble-aligned
 		// _saturn_cpu->Read[sat_addr >> 12] + (sat_addr & 0xfff) / 2
 		printf("0x%08x %s\n", sat_map_s2a(obj->addr), obj->name);
+		if (obj->name[0] == '\'') {
+			puts(_sat_decode_string(obj->addr));
+		}
 		entry = entry->next;
 		count++;
 	}
