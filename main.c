@@ -71,18 +71,36 @@ sat_strdup(unsigned sat_addr)
 }
 
 
+inline void
+display_title(const char *str)
+{
+	unsigned len = strlen(str) + 2;
+	extern int __scr_w;
+	int right = (__scr_w - len) / 2, left = __scr_w - len - right;
+
+	clear_screen();
+	while (left--) {
+		putchar('\x7f');
+	}
+	putchar(' ');
+	while (*str) {
+		putchar(*str++);
+	}
+	putchar(' ');
+	while (right--) {
+		putchar('\x7f');
+	}
+	for (int i = 0; i < 6; i++) {
+		hpg_set_indicator(i, 0x00);
+	}
+}
+
+
 int
 note_explorer(void)
 {
 	unsigned count = 0;
-	clear_screen();
-	for (int i = 0; i < 10; i++) {
-		putchar('\x7f');
-	}
-	printf(" Neko Notepad ");
-	for (int i = 0; i < 9; i++) {
-		putchar('\x7f');
-	}
+	display_title("Neko Notepad");
 	putchar('\n');
 
 	SAT_DIR_NODE *dir = _sat_find_path("/'notesdir");
@@ -114,7 +132,7 @@ note_explorer(void)
 				}
 				key--;
 				if (!key) {
-					return note_viewer(obj->addr, 0);
+					return note_viewer(obj, 0);
 				}
 			}
 		}
@@ -123,10 +141,10 @@ note_explorer(void)
 
 
 int
-note_viewer(unsigned sat_addr, unsigned offset)
+note_viewer(SAT_OBJ_DSCR *obj, unsigned offset)
 {
-	clear_screen();
-	char *buf = sat_strdup(sat_addr);
+	display_title(obj->name + 1);
+	char *buf = sat_strdup(obj->addr);
 	puts(buf + offset);
 	free(buf);
 	for (;;) {
