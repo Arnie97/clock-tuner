@@ -23,5 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 int event_handler(unsigned row, unsigned col);
 int note_explorer(void);
+int note_viewer(unsigned sat_addr, unsigned offset);
 
 #endif

@@ -66,6 +66,7 @@ sat_strdup(unsigned sat_addr)
 {
 	unsigned len = sat_strlen(sat_addr);
 	char *buf = sys_chkptr(malloc(len + 1));
+	buf[len] = '\0';
 	return sat_peek_sat_bytes(buf, sat_addr + 10, len);
 }
 
@@ -101,6 +102,33 @@ note_explorer(void)
 	gotoxy(0, 9);
 	printf("%u note entries", count);
 
+	for (;;) {
+		int key = get_key();
+		if (key == 25) {
+			return 0;  // exit program
+		} else if (1 <= key && key <= 9) {
+			for (SAT_DIR_ENTRY *entry = dir->object; entry; entry = entry->next) {
+				SAT_OBJ_DSCR *obj = entry->sat_obj;
+				if (obj->name[0] == ';') {
+					continue;
+				}
+				key--;
+				if (!key) {
+					return note_viewer(obj->addr, 0);
+				}
+			}
+		}
+	}
+}
+
+
+int
+note_viewer(unsigned sat_addr, unsigned offset)
+{
+	clear_screen();
+	char *buf = sat_strdup(sat_addr);
+	puts(buf + offset);
+	free(buf);
 	for (;;) {
 		int key = get_key();
 		if (key == 25) {
