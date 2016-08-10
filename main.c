@@ -69,27 +69,53 @@ event_handler(unsigned row, unsigned col)
 	return 0;
 }
 
+
+inline unsigned
+sat_strlen(unsigned sat_addr)
+{
+	return (sat_peek_sat_addr(sat_addr + 5) - 5) / 2;
+}
+
+
+inline char *
+sat_strdup(unsigned sat_addr)
+{
+	unsigned len = sat_strlen(sat_addr);
+	char *buf = sys_chkptr(malloc(len + 1));
+	return sat_peek_sat_bytes(buf, sat_addr + 10, len);
+}
+
+
 int
 note_explorer(void)
 {
-	SAT_DIR_NODE *dir = _sat_find_path("/'notesdir");
-	SAT_DIR_ENTRY *entry = dir->object;
-
+	unsigned count = 0;
 	clear_screen();
-	int count = 0;
-	while (entry) {
-		SAT_OBJ_DSCR *obj = entry->sat_obj;
-
-		// saturn data are nibble-aligned
-		// _saturn_cpu->Read[sat_addr >> 12] + (sat_addr & 0xfff) / 2
-		printf("0x%08x %s\n", sat_map_s2a(obj->addr), obj->name);
-		if (obj->name[0] == '\'') {
-			puts(_sat_decode_string(obj->addr));
-		}
-		entry = entry->next;
-		count++;
+	for (int i = 0; i < 10; i++) {
+		putchar('\x7f');
 	}
-	printf("\n%d notes in %d entries", count / 2, count);
+	printf(" Neko Notepad ");
+	for (int i = 0; i < 9; i++) {
+		putchar('\x7f');
+	}
+	putchar('\n');
+
+	SAT_DIR_NODE *dir = _sat_find_path("/'notesdir");
+	for (SAT_DIR_ENTRY *entry = dir->object; entry; entry = entry->next) {
+		SAT_OBJ_DSCR *obj = entry->sat_obj;
+		if (obj->name[0] == ';') {
+			continue;
+		}
+		count++;
+		printf(
+			" %c %23s%6u ",
+			count + '0',
+			obj->name + 1,
+			sat_strlen(obj->addr)
+		);
+	}
+	gotoxy(0, 9);
+	printf("%u note entries", count);
 
 	for (;;) {
 		int key = get_key();
