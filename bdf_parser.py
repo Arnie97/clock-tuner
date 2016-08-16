@@ -94,3 +94,15 @@ for line in sys.stdin:
 
                 storage[key] = buffer
                 break
+
+
+with open('HZK%d' % pixel_size, 'wb') as f:
+    for i in range(0xA1, 0xA1 + 87):
+        for j in range(0xA1, 0xA1 + 94):
+            # Fill missing glyphs with zero
+            hex_data = storage.get((i << 8) | j, [0] * 8)
+
+            # Add padding for items with spaces
+            while len(hex_data) < 8:
+                hex_data.insert(0, 0)
+            f.write(bytes(hex_data))
