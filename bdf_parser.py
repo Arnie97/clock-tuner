@@ -19,6 +19,7 @@ for line in sys.stdin:
         print(' '.join(group[1:]))
     elif group[0] == 'STARTFONT':
         count = ascii_count = gb_count = 0
+        storage = {}
     elif group[0] == 'ENDFONT':
         ascii_total, gb_total = 95, (6763 + 682)
         sys.stderr.write(
@@ -54,11 +55,13 @@ for line in sys.stdin:
 
         if code_point <= 0x7F:
             ascii_count += 1
+            key = code_point
             charset = 'ASCII: %#X' % code_point
         else:
             gb_count += 1
+            key = int.from_bytes(euc_cn, 'big')
             charset = 'EUC-CN: %#X  GB2312: %s' % (
-                int.from_bytes(euc_cn, 'little'),
+                key,
                 ''.join(format(byte - 0xA0, '02d') for byte in euc_cn)
             )
         print('Unicode: %#X  %s' % (code_point, charset))
@@ -77,16 +80,17 @@ for line in sys.stdin:
                 offset = max(offset, msb(hex_data))
 
             else:
+                glyph = []
                 offset -= width
-                print('\n'.join(
-                    format(
-                        hex_data >> offset
-                        if offset > 0 else
-                        hex_data << -offset,
-                        '0%db' % width
-                    ).translate({
-                        ord('0'): '..', ord('1'): '##'
-                    })
-                    for hex_data in buffer
-                ), '\n')
+                for hex_data in buffer:
+                    if offset > 0:
+                        hex_data >>= offset
+                    else:
+                        hex_data <<= -offset
+                    print(
+                        format(hex_data, '0%db' % width).
+                        translate({ord('0'): '..', ord('1'): '##'})
+                    )
+
+                storage[key] = buffer
                 break
