@@ -18,14 +18,26 @@ for line in sys.stdin:
     if group[0] == 'FONT':
         print(' '.join(group[1:]))
     elif group[0] == 'STARTFONT':
-        count = 0
+        count = ascii_count = gb_count = 0
     elif group[0] == 'ENDFONT':
-        print('%d glyphs parsed' % count)
+        ascii_total, gb_total = 95, (6763 + 682)
+        sys.stderr.write(
+            '%d utilized glyphs amongst %d parsed ones.\n'
+            ' ASCII coverage: %.2f%% (%d hits, %d misses)\n'
+            'GB2312 coverage: %.2f%% (%d hits, %d misses)\n' % (
+                ascii_count + gb_count, count,
+                ascii_count / ascii_total * 100,
+                ascii_count, ascii_total - ascii_count,
+                gb_count / gb_total * 100,
+                gb_count, gb_total - gb_count
+            )
+        )
         break
     elif group[0] == 'SIZE':
         pixel_size = int(group[1])
         hex_data_size = int((pixel_size + 7) / 8) * 8
     elif group[0] == 'STARTCHAR':
+        glyph_name = group[1]
         count += 1
 
     elif group[0] == 'ENCODING':
@@ -36,10 +48,15 @@ for line in sys.stdin:
             while line != 'ENDCHAR':
                 line = sys.stdin.readline().strip()
             continue
+        except ValueError as e:
+            print('Unknown glyph:', glyph_name)
+            continue
 
         if code_point <= 0x7F:
+            ascii_count += 1
             charset = 'ASCII: %#X' % code_point
         else:
+            gb_count += 1
             charset = 'EUC-CN: %#X  GB2312: %s' % (
                 int.from_bytes(euc_cn, 'little'),
                 ''.join(format(byte - 0xA0, '02d') for byte in euc_cn)
