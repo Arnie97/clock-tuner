@@ -27,12 +27,29 @@ for line in sys.stdin:
         hex_data_size = int((pixel_size + 7) / 8) * 8
     elif group[0] == 'STARTCHAR':
         count += 1
+
     elif group[0] == 'ENCODING':
-        encoding = int(group[1])
-        print(hex(encoding))
+        code_point = int(group[1])
+        try:
+            euc_cn = chr(code_point).encode('GB2312')
+        except UnicodeEncodeError:
+            while line != 'ENDCHAR':
+                line = sys.stdin.readline().strip()
+            continue
+
+        if code_point <= 0x7F:
+            charset = 'ASCII: %#X' % code_point
+        else:
+            charset = 'EUC-CN: %#X  GB2312: %s' % (
+                int.from_bytes(euc_cn, 'little'),
+                ''.join(format(byte - 0xA0, '02d') for byte in euc_cn)
+            )
+        print('Unicode: %#X  %s' % (code_point, charset))
+
     elif group[0] == 'BBX':
         width, height, x0, y0 = map(int, group[1:5])
         print(width, height, x0, y0)
+
     elif group[0] == 'BITMAP':
         buffer, offset = [], 0
         while True:
