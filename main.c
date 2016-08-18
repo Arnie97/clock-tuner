@@ -14,6 +14,9 @@ cols_real     = 13,
 
 width         = 131,
 height        = 64,
+left_margin   = 1,
+top_margin    = 0,
+line_spacing  = 1,
 bpp           = 1;
 
 
@@ -54,7 +57,7 @@ bitmap_blit(const char *beg, const char *end)
     initialize: memset(buf, 0, data_size);
 
     uint8_t font_data[offset_size];
-    int32_t x = 0, y = height - 1;
+    int32_t x = left_margin, y = height - 1 - top_margin;
     while (beg != end) {
         get_bitmap_font(font_data, (const uint8_t **)&beg, 0, offset_size);
         uint8_t *ptr = font_data, pos = 7;
@@ -77,8 +80,8 @@ bitmap_blit(const char *beg, const char *end)
             x += cols_real;
             y += rows;
         } else if (y >= rows) {  // next line
-            x = 0;
-            y--;
+            x = left_margin;
+            y -= line_spacing;
         } else {  // next page
             write_1_bit_bmp(file[2], width, height, buf);
             printf("Page %u is full!\n", page++);
