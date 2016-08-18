@@ -122,8 +122,10 @@ with open('HZK%d' % pixel_size, 'wb') as f:
             # reshape glyphs into bytes
             out_buffer = []
             out_cycle = itertools.cycle(reversed(range(8)))
-            for hex_data in in_buffer:
-                in_cycle = reversed(range(pixel_size))
+
+            # remove fixed padding to reduce size
+            for hex_data in in_buffer[1:]:
+                in_cycle = reversed(range(pixel_size - 1))
                 for in_bit, out_bit in zip(in_cycle, out_cycle):
                     # add a new byte to buffer
                     if out_bit == 7:
