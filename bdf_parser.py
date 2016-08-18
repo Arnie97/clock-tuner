@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import itertools
 
 
 def msb(n):
@@ -64,7 +65,10 @@ for line in sys.stdin:
                 key,
                 ''.join(format(byte - 0xA0, '02d') for byte in euc_cn)
             )
-        print('Unicode: %#X  %s' % (code_point, charset))
+        print(
+            'Glyph: "%s"  Unicode: %#X  %s' %
+            (chr(code_point), code_point, charset)
+        )
 
     elif group[0] == 'BBX':
         width, height, x0, y0 = map(int, group[1:5])
@@ -96,13 +100,37 @@ for line in sys.stdin:
                 break
 
 
+all_euc_cn_codepoints = map(
+    lambda pair: ((0xA1 + pair[0]) << 8) | (0xA1 + pair[1]),
+    itertools.product(*map(range, [87, 94]))
+)
 with open('HZK%d' % pixel_size, 'wb') as f:
-    for i in range(0xA1, 0xA1 + 87):
-        for j in range(0xA1, 0xA1 + 94):
-            # Fill missing glyphs with zero
-            hex_data = storage.get((i << 8) | j, [0] * 8)
+    for key in all_euc_cn_codepoints:
+        # Fill missing glyphs with zero
+        in_buffer = storage.get(key, [0] * pixel_size)
 
-            # Add padding for items with spaces
-            while len(hex_data) < 8:
-                hex_data.insert(0, 0)
-            f.write(bytes(hex_data))
+        # Add padding for items with spaces
+        while len(in_buffer) < pixel_size:
+            in_buffer.insert(0, 0)
+
+        if pixel_size == 8:
+            out_buffer = in_buffer
+
+        else:
+            # remove fixed padding to reduce size
+            in_buffer.pop()
+
+            # reshape glyphs into bytes
+            out_buffer = []
+            out_cycle = itertools.cycle(reversed(range(8)))
+            for hex_data in in_buffer:
+                in_cycle = reversed(range(1, pixel_size))
+                for in_bit, out_bit in zip(in_cycle, out_cycle):
+                    # add a new byte to buffer
+                    if out_bit == 7:
+                        out_buffer.append(0)
+
+                    # copy one bit to output
+                    out_buffer[-1] |= ((hex_data >> in_bit) & 1) << out_bit
+
+        f.write(bytes(out_buffer))
