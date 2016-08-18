@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include <time.h>
+#include "util.h"
+
 
 uint8_t *
 generate_random_image(uint32_t width, uint32_t height)
@@ -13,11 +12,7 @@ generate_random_image(uint32_t width, uint32_t height)
     bytes_per_row = (width * bpp + 31) / 32 * 4,
     data_size     = bytes_per_row * height;
 
-    uint8_t *buf = malloc(data_size);
-    if (!buf) {
-        printf("Memory allocation FAILED!\n");
-        return NULL;
-    }
+    uint8_t *buf = alloc(data_size);
 
     /* generate grayscale of each pixel and save it to buf array */
     srand(time(0));
@@ -33,6 +28,7 @@ generate_random_image(uint32_t width, uint32_t height)
     }
     return buf;
 }
+
 
 int
 write_1_bit_bmp(const char *file, uint32_t width, uint32_t height, uint8_t *data)
@@ -69,12 +65,7 @@ write_1_bit_bmp(const char *file, uint32_t width, uint32_t height, uint8_t *data
     printf("file_size     = %d\n", file_size);
 #endif
 
-    FILE *fp = fopen(file, "wb");
-    if (!fp) {
-        printf("Failed to open or create file %s\n", file);
-        return 1;
-    }
-
+    FILE *fp = open(file, "wb");
     #define FWRITE(x) fwrite(&(x), 1, sizeof(x), fp)
 
     /* bmp file header */
@@ -109,6 +100,7 @@ write_1_bit_bmp(const char *file, uint32_t width, uint32_t height, uint8_t *data
     fclose(fp);
     return 0;
 }
+
 
 #if _DEBUG
 int
