@@ -86,13 +86,13 @@ for line in sys.stdin:
             else:
                 glyph = []
                 offset -= width
-                for hex_data in buffer:
+                for i, _ in enumerate(buffer):
                     if offset > 0:
-                        hex_data >>= offset
+                        buffer[i] >>= offset
                     else:
-                        hex_data <<= -offset
+                        buffer[i] <<= -offset
                     print(
-                        format(hex_data, '0%db' % width).
+                        format(buffer[i], '0%db' % width).
                         translate({ord('0'): '..', ord('1'): '##'})
                     )
 
@@ -117,14 +117,11 @@ with open('HZK%d' % pixel_size, 'wb') as f:
             out_buffer = in_buffer
 
         else:
-            # remove fixed padding to reduce size
-            in_buffer.pop()
-
             # reshape glyphs into bytes
             out_buffer = []
             out_cycle = itertools.cycle(reversed(range(8)))
             for hex_data in in_buffer:
-                in_cycle = reversed(range(1, pixel_size))
+                in_cycle = reversed(range(pixel_size))
                 for in_bit, out_bit in zip(in_cycle, out_cycle):
                     # add a new byte to buffer
                     if out_bit == 7:
