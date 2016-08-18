@@ -20,7 +20,7 @@ get_bitmap_font(void *buf, const unsigned char *bytes[], size_t offset, size_t s
         offset += code_point * size;  // 得出此字符在文件中的偏移
         *bytes += 2;                  // 全角字符
     } else {
-        offset += (*bytes[0] + 156 - 1) * size;
+        offset += (*bytes[0] + (2 * 94 - ' ') - 1) * size;
         *bytes += 1;                  // 半角字符
     }
     FILE *fp = fopen("res/font/HZK12", "rb");
@@ -82,17 +82,17 @@ bitmap_blit(
             }
             x -= cols;
         }
-        if (x < width - cols_) {
+        if (x + cols_ <= width - cols_) {  // next char
             x += cols_;
             y += rows;
-        } else if (y < 0) {
+        } else if (y >= rows) {  // next line
+            x = 0;
+            y--;
+        } else {  // next page
             write_1_bit_bmp(file, width, height, buf);
             printf("Page %u is full!\nPress ENTER to proceed with the next page...", page++);
             getchar();
             goto initialize;
-        } else {
-            x = 0;
-            y--;
         }
     }
     write_1_bit_bmp(file, width, height, buf);
