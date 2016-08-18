@@ -75,26 +75,28 @@ for line in sys.stdin:
         print(width, height, x0, y0)
 
     elif group[0] == 'BITMAP':
-        buffer, offset = [], 0
+        buffer, x_offset = [], 0
         while True:
             line = sys.stdin.readline().strip()
             if line != 'ENDCHAR':
                 hex_data = int(line, 16)
                 buffer.append(hex_data)
-                offset = max(offset, msb(hex_data))
+                x_offset = max(x_offset, msb(hex_data))
 
             else:
                 glyph = []
-                offset -= width
+                x_offset += x0 - pixel_size + 1
+                y_offset = y0 + 1
                 for i, _ in enumerate(buffer):
-                    if offset > 0:
-                        buffer[i] >>= offset
+                    if x_offset > 0:
+                        buffer[i] >>= x_offset
                     else:
-                        buffer[i] <<= -offset
+                        buffer[i] <<= -x_offset
                     print(
                         format(buffer[i], '0%db' % width).
                         translate({ord('0'): '..', ord('1'): '##'})
                     )
+                buffer.extend(itertools.repeat(0, y_offset))
 
                 storage[key] = buffer
                 break
