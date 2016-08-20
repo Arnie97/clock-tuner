@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <stdint.h>
 #include <saturn.h>
-#include <satdir.h>
 #include <hpsys.h>
 #include <hpstdio.h>
 #include <hpconio.h>
@@ -53,11 +52,10 @@ event_handler(unsigned row, unsigned col)
 	return 0;
 }
 
-
-inline unsigned
+inline int
 sat_strlen(unsigned sat_addr)
 {
-	return (sat_peek_sat_addr(sat_addr + 5) - 5) / 2;
+	return ((int)sat_peek_sat_addr(sat_addr + 5) - 5) / 2;
 }
 
 
@@ -71,7 +69,7 @@ sat_strdup(unsigned sat_addr)
 }
 
 
-inline void
+void
 display_title(const char *str)
 {
 	unsigned len = strlen(str) + 2;
@@ -111,10 +109,8 @@ note_explorer(void)
 		}
 		count++;
 		printf(
-			" %c %23s%6u ",
-			count + '0',
-			obj->name + 1,
-			sat_strlen(obj->addr)
+			" %2u %21s%6d\n",
+			count, obj->name + 1, sat_strlen(obj->addr)
 		);
 	}
 	gotoxy(0, 9);
