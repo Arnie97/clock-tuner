@@ -41,7 +41,7 @@ _start(void)
 
 	// set the screen height for the <hpstdio.h> module
 	extern int __scr_h;
-	__scr_h = 10;
+	__scr_h = 11;
 
 	// declare locally to reduce executable size
 	unsigned state_buffer[4], lcd_buffer[17];
@@ -55,7 +55,7 @@ _start(void)
 
 	// will return 0 when exitting
 	if (_exit_save((unsigned *)state_buffer)) {
-		note_explorer();
+		note_explorer(NULL);
 		__exit_cleanup();
 	}
 

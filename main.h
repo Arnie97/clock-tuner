@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <satdir.h>
 
 int event_handler(unsigned row, unsigned col);
-int note_explorer(void);
+int note_explorer(SAT_DIR_ENTRY *init);
 int note_viewer(SAT_OBJ_DSCR *sat_addr, unsigned offset);
 
 #endif
