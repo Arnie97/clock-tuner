@@ -147,7 +147,7 @@ note_explorer(SAT_DIR_ENTRY *init)
 				}
 				key--;
 				if (!key) {
-					return note_viewer(obj, 0);
+					return note_viewer(obj);
 				}
 			}
 		}
@@ -156,11 +156,10 @@ note_explorer(SAT_DIR_ENTRY *init)
 
 
 int
-note_viewer(SAT_OBJ_DSCR *obj, unsigned offset)
+note_viewer(SAT_OBJ_DSCR *obj)
 {
-	display_title(obj->name + 1);
 	char *buf = sat_strdup(obj->addr);
-	puts(buf + offset);
+	bitmap_blit(buf);
 	free(buf);
 
 	for (;;) {

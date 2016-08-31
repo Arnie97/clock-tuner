@@ -51,4 +51,6 @@ extern uint8_t *__display_buf;
 #define indicator_battery   4
 #define indicator_wait      5
 
+const char *bitmap_blit(const char *text);
+
 #endif
