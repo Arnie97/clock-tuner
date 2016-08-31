@@ -36,4 +36,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern uint8_t *__display_buf;
 
+#define indicator(n) __display_buf[bytes_per_row * (n) + (width >> 3)]
+#define indicator_mask (1 << (width & 7))
+#define get_indicator(n) (indicator(n) | indicator_mask)
+#define set_indicator(n, value) { \
+    if (value) indicator(n) |= indicator_mask; \
+    else indicator(n) &= ~indicator_mask; \
+};
+
+#define indicator_remote    0
+#define indicator_lshift    1
+#define indicator_rshift    2
+#define indicator_alpha     3
+#define indicator_battery   4
+#define indicator_wait      5
+
 #endif

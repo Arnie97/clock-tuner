@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <hpstdio.h>
 #include <hpconio.h>
 #include <hpstring.h>
-#include <hpgraphics.h>
 #include "hp39kbd.h"
+#include "display.h"
 #include "main.h"
 
 
@@ -89,7 +89,7 @@ display_title(const char *str)
 		putchar('\x7f');
 	}
 	for (int i = 0; i < 6; i++) {
-		hpg_set_indicator(i, 0x00);
+		set_indicator(i, FALSE);
 	}
 }
 
@@ -104,7 +104,7 @@ note_explorer(SAT_DIR_ENTRY *init)
 		SAT_DIR_NODE *dir = _sat_find_path("/'notesdir");
 		init = dir->object;
 	} else {
-		hpg_set_indicator(HPG_INDICATOR_LSHIFT, 0xFF);
+		set_indicator(indicator_lshift, TRUE);
 	}
 
 	unsigned count = 0;
@@ -116,7 +116,7 @@ note_explorer(SAT_DIR_ENTRY *init)
 		}
 		if (count == 8) {
 			next_page = entry;
-			hpg_set_indicator(HPG_INDICATOR_RSHIFT, 0xFF);
+			set_indicator(indicator_rshift, TRUE);
 			break;
 		}
 		count++;
