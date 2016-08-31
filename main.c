@@ -21,21 +21,18 @@ bpp           = 1;
 
 
 void *
-get_bitmap_font(void *buf, const uint8_t **bytes, size_t offset, size_t size)
+get_bitmap_font(void *buf, const uint8_t **bytes, size_t size)
 {
-    size_t code_point;
-    if (0[*bytes] >= 0xA1) {        // ISO/IEC 2022 GR区
-        code_point =                // 计算字符在区位码二维表中的位置
-            (0[*bytes] - 0xA1)      // 区码
-            * 94                    // 每区的字符数
-            + (1[*bytes] - 0xA1);   // 位码
-        *bytes += 2;                // 全角字符，指针移动两字节
-    } else {                        // ISO/IEC 2022 G0区
-        code_point = 0[*bytes]      // 用相应的全角字符代替半角字符
-            + (2 * 94 - ' ' - 1);   // GB 2312-1980，第3区
+    int page = 0[*bytes] - 0xA0;    // 区码
+    int id   = 1[*bytes] - 0xA0;    // 位码
+    if (page < 0) {                 // ISO/IEC 2022 G0区
+        page = 3;                   // 用 GB 2312-1980 第3区中
+        id = 0[*bytes] - ' ' - 1;   // 相应的全角字符代替半角字符
         *bytes += 1;                // 半角字符，指针移动一字节
+    } else {                        // ISO/IEC 2022 GR区
+        *bytes += 2;                // 全角字符，指针移动两字节
     }
-    offset += code_point * size;
+    size_t offset = ((page - 1) * 94 + (id - 1)) * size;
     FILE *fp = open(file[0], "rb");
     fseek(fp, offset, SEEK_SET);
     fread(buf, 1, size, fp);
@@ -48,7 +45,7 @@ unsigned
 bitmap_blit(const char *beg, const char *end)
 {
     const size_t
-    offset_size = (rows * cols_storage + 7) / 8,
+    bytes_per_glyph = (rows * cols_storage + 7) / 8,
     bytes_per_row = (width * bpp + 31) / 32 * 4,
     data_size = bytes_per_row * height;
 
@@ -56,10 +53,10 @@ bitmap_blit(const char *beg, const char *end)
     uint8_t *buf = alloc(data_size);
     initialize: memset(buf, 0, data_size);
 
-    uint8_t font_data[offset_size];
+    uint8_t font_data[bytes_per_glyph];
     int32_t x = left_margin, y = height - 1 - top_margin;
     while (beg != end) {
-        get_bitmap_font(font_data, (const uint8_t **)&beg, 0, offset_size);
+        get_bitmap_font(font_data, (const uint8_t **)&beg, bytes_per_glyph);
         uint8_t *ptr = font_data, pos = 7;
         for (size_t row = 0; row < rows; row++, y--) {
             for (size_t col = 0; col < cols_storage; col++, x++) {
