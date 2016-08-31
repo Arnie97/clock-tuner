@@ -1,13 +1,13 @@
 #include <string.h>
 #include "util.h"
 
-const char *file[] = {
+static const char *file[] = {
     "res/font/HZK12",
     "gb2312.txt",
     "__ADK__.BMP"
 };
 
-static const size_t
+static const int
 rows          = 12,
 cols_storage  = 16,
 cols_real     = 13,
