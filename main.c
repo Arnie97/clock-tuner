@@ -32,18 +32,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int
 event_handler(unsigned row, unsigned col)
 {
-	// [APLET]
-	if (row == 0 && col == 7) {
+	// [APLET], [HOME]
+	if (row == 0 && col == 7 || row == 6 && col == 6) {
 		// exit immediately
 		return 27;
 	} else {
 		// wait until the key is released
+		set_indicator(indicator_wait, TRUE);
 		while (any_key_pressed);
+		set_indicator(indicator_wait, FALSE);
 	}
 
 	// [UP]: 0, [LEFT]: 1, [DOWN]: 2, [RIGHT]: 3
 	if (col == 6) {
 		return row + 20;
+	} else if (row == 1 && col == 7) {
+		return 28;  // [VIEWS]
 	} else if (3 <= row && row <= 5 && 1 <= col && col <= 3) {
 		return (6 - row) * 3 - col + 1;
 	}
@@ -133,8 +137,8 @@ note_explorer(SAT_DIR_ENTRY *init)
 			return 0;  // exit program
 		} else if ((key == 22 || key == 23) && next_page) {
 			return note_explorer(next_page);  // page down
-		} else if (key == 20 || key == 21 || key == 26) {
-			return note_explorer(NULL);  // go home
+		} else if (key == 20 || key == 21) {
+			return note_explorer(NULL);  // first page
 		} else if (1 <= key && key <= count) {
 			for (SAT_DIR_ENTRY *entry = init; entry; entry = entry->next) {
 				SAT_OBJ_DSCR *obj = entry->sat_obj;
@@ -163,8 +167,8 @@ note_viewer(SAT_OBJ_DSCR *obj, unsigned offset)
 		int key = get_key();
 		if (key == 27) {
 			return 0;  // exit program
-		} else if (key == 26) {
-			return note_explorer(NULL);  // go home
+		} else if (key == 28) {
+			return note_explorer(NULL);  // go back to the list
 		}
 	}
 }
