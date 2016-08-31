@@ -102,5 +102,6 @@ bitmap_blit(const char *text)
             break;
         }
     }
+    set_indicator(indicator_rshift, *text);
     return text;
 }
