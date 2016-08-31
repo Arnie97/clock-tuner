@@ -79,6 +79,8 @@ bitmap_blit(const char *beg, const char *end)
         } else if (y >= rows) {  // next line
             x = left_margin;
             y -= line_spacing;
+        } else if (beg == end) {  // exactly full
+            break;
         } else {  // next page
             write_1_bit_bmp(file[2], width, height, buf);
             printf("Page %u is full!\n", page++);
