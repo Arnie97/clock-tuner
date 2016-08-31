@@ -71,6 +71,12 @@ bitmap_blit(const char *text)
     SysCall(ClearLcdEntry);
     int x = left_margin, y = top_margin;
     while (*text) {
+        if (*text == '\n') {
+            text++;
+            x = width;
+            y += rows;
+            goto next;
+        }
         uint8_t pos = 7, *ptr = get_bitmap_font((const uint8_t **)&text);
         for (size_t row = 0; row < rows; row++, y++) {
             for (size_t col = 0; col < cols_storage; col++, x++) {
@@ -92,7 +98,7 @@ bitmap_blit(const char *text)
 #endif
         }
 
-        if (x + cols_real <= width - cols_real) {  // next char
+        next: if (x + cols_real <= width - cols_real) {  // next char
             x += cols_real;
             y -= rows;
         } else if (y + line_spacing + rows <= height) {  // next line
