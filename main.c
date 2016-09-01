@@ -18,13 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
-#include <stdint.h>
 #include <saturn.h>
-#include <hpsys.h>
 #include <hpstdio.h>
 #include <hpconio.h>
 #include <hpstring.h>
 #include "hp39kbd.h"
+#include "stack.h"
 #include "display.h"
 #include "main.h"
 
@@ -55,6 +54,7 @@ event_handler(unsigned row, unsigned col)
 	// unhandled keys
 	return 0;
 }
+
 
 inline int
 sat_strlen(unsigned sat_addr)
@@ -177,20 +177,31 @@ note_explorer(SAT_DIR_ENTRY *init)
 int
 note_viewer(SAT_OBJ_DSCR *obj)
 {
+	NODE *head = NULL;
 	const char *buf = sat_strdup(obj->addr);
-	const char *next_page = bitmap_blit(buf);
+	const char *next_page = buf;
+	goto refresh;
 
 	for (;;) {
 		int key = get_key();
 		if (key == 27) {
 			return 0;  // exit program
 		} else if ((key == 22 || key == 23) && *next_page) {
+			refresh: push(&head, next_page);
 			next_page = bitmap_blit(next_page);  // page down
-			set_indicator(indicator_lshift, buf);
+			set_indicator(indicator_lshift, head->data != buf);
 		} else if (key == 20 || key == 21) {
-			next_page = bitmap_blit(buf);  // first page
+			pop(&head);
+			next_page = pop(&head);  // page up
+			if (!next_page) {
+				next_page = buf;
+			}
+			goto refresh;
 		} else if (key == 28) {
-			free(buf);
+			free((void *)buf);
+			while (head) {
+				pop(&head);
+			}
 			return note_explorer(NULL);  // go back to the list
 		}
 	}
