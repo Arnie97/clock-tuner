@@ -150,14 +150,17 @@ note_explorer(SAT_DIR_ENTRY *init)
 	}
 	gotoxy(0, 9);
 
+	static NODE *head;
 	for (;;) {
 		int key = get_key();
 		if (key == 27) {
 			return 0;  // exit program
 		} else if ((key == 22 || key == 23) && next_page) {
+			push(&head, next_page);
 			return note_explorer(next_page);  // page down
 		} else if (key == 20 || key == 21) {
-			return note_explorer(NULL);  // first page
+			pop(&head);
+			return note_explorer(pop(&head));  // page up
 		} else if (1 <= key && key <= count) {
 			for (SAT_DIR_ENTRY *entry = init; entry; entry = entry->next) {
 				SAT_OBJ_DSCR *obj = entry->sat_obj;
@@ -166,7 +169,7 @@ note_explorer(SAT_DIR_ENTRY *init)
 				}
 				key--;
 				if (!key) {
-					return note_viewer(obj);
+					return note_viewer(obj, head? head->data: NULL);
 				}
 			}
 		}
@@ -175,7 +178,7 @@ note_explorer(SAT_DIR_ENTRY *init)
 
 
 int
-note_viewer(SAT_OBJ_DSCR *obj)
+note_viewer(SAT_OBJ_DSCR *obj, SAT_DIR_ENTRY *ref)
 {
 	NODE *head = NULL;
 	const char *buf = sat_strdup(obj->addr);
@@ -202,7 +205,7 @@ note_viewer(SAT_OBJ_DSCR *obj)
 			while (head) {
 				pop(&head);
 			}
-			return note_explorer(NULL);  // go back to the list
+			return note_explorer(ref);  // go back to the list
 		}
 	}
 }
