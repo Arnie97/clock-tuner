@@ -54,7 +54,7 @@ get_bitmap_font(const uint8_t **bytes)
     }
 
     size_t code_point = ((page - 1) * 94 + (id - 1));
-    for (size_t i = sizeof(offset) / sizeof(*offset); i; i--) {
+    for (size_t i = sizeof(offset) / sizeof(*offset); i >= 0; i--) {
         if (code_point >= offset[i][1]) {
             code_point -= offset[i][1];
             code_point *= bytes_per_glyph;
