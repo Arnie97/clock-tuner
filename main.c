@@ -98,6 +98,28 @@ display_title(const char *str)
 }
 
 
+void
+display_item(unsigned count, SAT_OBJ_DSCR *obj)
+{
+	putchar(' ');
+	putchar(' ');
+	putchar('0' + count);
+	putchar(' ');
+
+	char *name = obj->name + 1;
+	while (*name) {
+		putchar(*name++);
+	}
+
+	char buf[7];
+	utoa(sat_strlen(obj->addr), buf, 10);
+	for (unsigned i = obj->name - name - strlen(buf) + 28; i > 0; i--) {
+		putchar(' ');
+	}
+	puts(buf);
+}
+
+
 int
 note_explorer(SAT_DIR_ENTRY *init)
 {
@@ -124,10 +146,7 @@ note_explorer(SAT_DIR_ENTRY *init)
 			break;
 		}
 		count++;
-		printf(
-			" %2u %21s%6d\n",
-			count, obj->name + 1, sat_strlen(obj->addr)
-		);
+		display_item(count, obj);
 	}
 	gotoxy(0, 9);
 
