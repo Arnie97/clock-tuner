@@ -159,9 +159,6 @@ int
 note_viewer(SAT_OBJ_DSCR *obj)
 {
 	const char *buf = sat_strdup(obj->addr);
-	if (*buf == '\n') {
-		buf++;
-	}
 	const char *next_page = bitmap_blit(buf);
 
 	for (;;) {

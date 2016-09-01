@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define top_margin      1
 #define line_spacing    1
 
+#include <stdint.h>
 extern uint8_t *__display_buf;
 
 #define indicator(n) __display_buf[bytes_per_row * (n) + (width >> 3)]

@@ -69,6 +69,9 @@ const char *
 bitmap_blit(const char *text)
 {
     SysCall(ClearLcdEntry);
+    if (*text == '\n') {
+        text++;  // omit line breaks between pages
+    }
     int x = left_margin, y = top_margin;
     while (*text) {
         if (*text == '\n') {
