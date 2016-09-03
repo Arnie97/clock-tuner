@@ -84,9 +84,9 @@ clkslow_to_freq(struct clkslow *reg, unsigned fin)
 inline unsigned
 freq_to_access_cycle(unsigned freq)
 {
-	unsigned desired_clock = freq / 16;
+	unsigned desired_clock = freq / 24;
 	const char clocks[] = {1, 2, 3, 4, 6, 8, 10, 14};
-	for (int i = 0; i < sizeof(clocks) / sizeof(*clocks); i++) {
+	for (int i = 2; i < sizeof(clocks) / sizeof(*clocks); i++) {
 		if (desired_clock <= clocks[i]) {
 			return i;
 		}
