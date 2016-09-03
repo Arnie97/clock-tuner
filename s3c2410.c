@@ -1,4 +1,4 @@
-/* S3C2410 MPLLCON manipulating module
+/* S3C2410 register manipulating module
 
 Copyright (C) 2016 Arnie97
 
@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
-#include "mpllcon.h"
+#include "s3c2410.h"
 
 const unsigned valid_mpllcon_values[] = {
 	// custom value
@@ -62,4 +62,20 @@ is_valid_mpllcon(unsigned *reg)
 	}
 
 	return 0;
+}
+
+
+inline float
+clkslow_to_freq(struct clkslow *reg, unsigned fin)
+{
+	if (reg->slow_bit) {
+		// slow mode
+		if (reg->slow_val) {
+			return (float)fin / (2 * reg->slow_val);
+		}
+		return fin;
+	} else {
+		// normal mode
+		return 0;
+	}
 }

@@ -23,8 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "s3c2410.h"
 #include "hp39kbd.h"
 #include "display.h"
-#include "mpllcon.h"
-#include "clkslow.h"
 #include "main.h"
 
 const char title[] = "Clock Tuner for HP 39g+";

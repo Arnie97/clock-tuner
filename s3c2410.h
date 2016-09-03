@@ -1,4 +1,4 @@
-/* S3C2410 hardware definitions
+/* S3C2410 register manipulating module
 
 Copyright (C) 2016 Arnie97
 
@@ -23,6 +23,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define delay(t) { volatile int i = (t); while (i--); }
 
+struct mpllcon {
+	unsigned sdiv:  2;
+	unsigned     :  2;
+	unsigned pdiv:  6;
+	unsigned     :  2;
+	unsigned mdiv:  8;
+	unsigned     : 12;
+};
+
+struct clkslow {
+	unsigned slow_val:  3;
+	unsigned         :  1;
+	unsigned slow_bit:  1;
+	unsigned mpll_off:  1;
+	unsigned         :  1;
+	unsigned uclk_on :  1;
+};
+
 // remapped addresses of registers
 #define MPLLCON   ((unsigned *)0x07200004)
 #define CLKSLOW   ((unsigned *)0x07200010)
@@ -37,5 +55,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // frequency of external oscillator
 #define FIN 12
+
+extern const unsigned valid_mpllcon_values[];
+float mpllcon_to_freq(struct mpllcon *reg, unsigned fin);
+int is_valid_mpllcon(unsigned *reg);
+float clkslow_to_freq(struct clkslow *reg, unsigned fin);
 
 #endif
