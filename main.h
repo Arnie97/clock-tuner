@@ -25,7 +25,7 @@ int event_handler(unsigned row, unsigned col);
 int show_system_info(void);
 int show_freq_config(int page);
 int show_freq_confirm(int choice);
-int show_freq_change(unsigned mpllcon, unsigned clkslow);
+int show_freq_change(unsigned mpllcon, unsigned clkslow, unsigned freq);
 int show_credits(void);
 
 #endif

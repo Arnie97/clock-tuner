@@ -78,7 +78,7 @@ show_system_info(void)
 	clear_screen();
 	printf(
 		"%s\n\n"
-		"v1.1 build 20160711 by Arnie97\n\n",
+		"v1.2 build 20160903 by Arnie97\n\n",
 		title
 	);
 	delay(50000);
@@ -103,11 +103,10 @@ show_system_info(void)
 		"SLOW MODE", "ENABLED"
 	};
 	printf(
-		"MPLLCON %08x at %08x\n"
-		"CLKSLOW %08x at %08x\n"
+		"MPLLCON   CLKSLOW   BANKCON0\n"
+		"%08x  %08x  %08x\n"
 		"  (%.2f MHz, %s %s)\n",
-		*MPLLCON, (unsigned)MPLLCON,
-		*CLKSLOW, (unsigned)CLKSLOW,
+		*MPLLCON, *CLKSLOW, *BANKCON0,
 		fclk, msg[status], msg[status == 4? 5: 3]
 	);
 
@@ -233,17 +232,18 @@ show_freq_confirm(int choice)
 		else if (k == 5)  // [APLET]
 			return 0;  // exit program
 		else if (k == 6)  // [ENTER]
-			return show_freq_change(mpllcon, clkslow);
+			return show_freq_change(mpllcon, clkslow, fclk2);
 	}
 }
 
 
 int
-show_freq_change(unsigned mpllcon, unsigned clkslow)
+show_freq_change(unsigned mpllcon, unsigned clkslow, unsigned freq)
 {
 	clear_screen();
 	printf("Working hard, please hold on...\n\n");
 	sys_LCDSynch();
+	BANKCON0->tacc = freq_to_access_cycle(freq);
 	*MPLLCON = mpllcon;
 	*CLKSLOW = clkslow;
 	sys_lcdfix();

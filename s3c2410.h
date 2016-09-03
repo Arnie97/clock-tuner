@@ -41,13 +41,24 @@ struct clkslow {
 	unsigned uclk_on :  1;
 };
 
+struct bankcon {
+	unsigned pmc:   2;
+	unsigned tacp:  2;
+	unsigned tcah:  2;
+	unsigned tcoh:  2;
+	unsigned tacc:  3;
+	unsigned tcos:  2;
+	unsigned tacs:  2;
+	unsigned     : 17;
+};
+
 // remapped addresses of registers
 #define MPLLCON   ((unsigned *)0x07200004)
 #define CLKSLOW   ((unsigned *)0x07200010)
 #define CLKDIVN   ((unsigned *)0x07200014)
 
-#define BANKCON0  ((unsigned *)0x07000004)
-#define BANKCON1  ((unsigned *)0x07000008)
+#define BANKCON0  ((struct bankcon *)0x07000004)
+#define BANKCON1  ((struct bankcon *)0x07000008)
 
 #define GPFDAT    ((unsigned *)0x07A00054)
 #define GPGCON    ((unsigned *)0x07A00060)
@@ -60,5 +71,6 @@ extern const unsigned valid_mpllcon_values[];
 float mpllcon_to_freq(struct mpllcon *reg, unsigned fin);
 int is_valid_mpllcon(unsigned *reg);
 float clkslow_to_freq(struct clkslow *reg, unsigned fin);
+unsigned freq_to_access_cycle(unsigned freq);
 
 #endif
