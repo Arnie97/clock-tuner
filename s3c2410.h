@@ -23,8 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define delay(t) { volatile int i = (t); while (i--); }
 
-extern volatile unsigned *const GPFDAT, *const GPGCON, *const GPGDAT,
-	*const MPLLCON, *const CLKSLOW, *const CLKDIVN;
-extern const unsigned FIN;
+// remapped addresses of registers
+#define MPLLCON   ((unsigned *)0x07200004)
+#define CLKSLOW   ((unsigned *)0x07200010)
+#define CLKDIVN   ((unsigned *)0x07200014)
+
+#define BANKCON0  ((unsigned *)0x07000004)
+#define BANKCON1  ((unsigned *)0x07000008)
+
+#define GPFDAT    ((unsigned *)0x07A00054)
+#define GPGCON    ((unsigned *)0x07A00060)
+#define GPGDAT    ((unsigned *)0x07A00064)
+
+// frequency of external oscillator
+#define FIN 12
 
 #endif

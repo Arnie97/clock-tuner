@@ -18,12 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
-#include <hpsys.h>
 #include <hpstdio.h>
 #include <hpconio.h>
-#include <hpgraphics.h>
 #include "s3c2410.h"
 #include "hp39kbd.h"
+#include "display.h"
 #include "mpllcon.h"
 #include "clkslow.h"
 #include "main.h"
@@ -40,7 +39,9 @@ event_handler(unsigned row, unsigned col)
 		return 5;
 	} else {
 		// wait until the key is released
+		set_indicator(indicator_wait, TRUE);
 		while (any_key_pressed);
+		set_indicator(indicator_wait, FALSE);
 	}
 
 	// [UP]: 0, [DOWN]: 2, [PLOT]: 4, [HOME]: 6
@@ -82,10 +83,11 @@ show_system_info(void)
 		"v1.1 build 20160711 by Arnie97\n\n",
 		title
 	);
+	delay(50000);
 	for (int i = 0; i < 6; i++) {
-		delay(300000);
-		hpg_set_indicator((i + 1) % 6, 0xFF);
-		hpg_set_indicator(i, 0x00);
+		set_indicator((i + 1) % 6, TRUE);
+		set_indicator(i, FALSE);
+		delay(400000);
 	}
 
 	int status;
@@ -112,7 +114,7 @@ show_system_info(void)
 	);
 
 	delay(500000);
-	hpg_set_indicator(0, 0x00);
+	set_indicator(0, FALSE);
 	gotoxy(0, 8);
 	printf(
 		"Config:  [PLOT]   Exit:   [APLET]"

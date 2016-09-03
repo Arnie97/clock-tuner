@@ -1,4 +1,5 @@
 .PHONY: all believe clean
+.SECONDARY: $(OBJ)
 
 ifeq ($(TARGET),)
     $(info Inspecting compiler to use...)

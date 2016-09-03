@@ -1,4 +1,4 @@
-/* S3C2410 hardware definitions
+/* Display manipulating module
 
 Copyright (C) 2016 Arnie97
 
@@ -18,16 +18,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 */
 
-#include "s3c2410.h"
+#ifndef _DISPLAY_H
+#define _DISPLAY_H
 
-// remapped addresses of clock registers
-volatile unsigned
-	*const GPFDAT  = (unsigned *)0x07A00054,
-	*const GPGCON  = (unsigned *)0x07A00060,
-	*const GPGDAT  = (unsigned *)0x07A00064,
-	*const MPLLCON = (unsigned *)0x07200004,
-	*const CLKSLOW = (unsigned *)0x07200010,
-	*const CLKDIVN = (unsigned *)0x07200014;
+#define width           131
+#define height          64
+#define bytes_per_row   20
 
-// frequency of external oscillator
-const unsigned FIN = 12;
+#include <stdint.h>
+extern uint8_t *__display_buf;
+
+#define indicator(n) __display_buf[bytes_per_row * (n) + (width >> 3)]
+#define indicator_mask (1 << (width & 7))
+#define get_indicator(n) (indicator(n) | indicator_mask)
+#define set_indicator(n, value) { \
+    if (value) indicator(n) |= indicator_mask; \
+    else indicator(n) &= ~indicator_mask; \
+};
+
+#define indicator_remote    0
+#define indicator_lshift    1
+#define indicator_rshift    2
+#define indicator_alpha     3
+#define indicator_battery   4
+#define indicator_wait      5
+
+#endif
