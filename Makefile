@@ -43,7 +43,7 @@ clean:
 	rm *.o *.elf *.hp
 
 %.apt: %.hp
-	$(HP2APT) $< $@
+	$(HP2APT) $< $@ "Clock Tuner"
 
 %.hp: %.elf
 	$(ELF2HP) $< $@
