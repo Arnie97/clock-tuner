@@ -22,8 +22,8 @@ HP2APT ?= hp2aplet
 
 SRC ?= $(wildcard *.c)
 OBJ ?= $(SRC:%.c=%.o)
-INC ?= "$(HPGCC)\include"
-LIB ?= "$(HPGCC)\lib"
+INC ?= "$(HPGCC)/include"
+LIB ?= "$(HPGCC)/lib"
 
 
 CFLAGS ?= -std=c99 -Wall -Os -I$(INC) -L$(LIB) \
